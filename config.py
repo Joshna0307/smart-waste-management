@@ -17,7 +17,7 @@ class Config:
     SQLALCHEMY_DATABASE_URI = _database_url()
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    MAX_CONTENT_LENGTH = 8 * 1024 * 1024
+    MAX_CONTENT_LENGTH = 3 * 1024 * 1024
     if os.environ.get("VERCEL"):
         UPLOAD_FOLDER = "/tmp/smart-waste-uploads"
     else:
