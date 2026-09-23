@@ -10,6 +10,7 @@ from services.chatbot import reply
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
+# Vercel entry point: expose the Flask instance at module scope.
 application = app
 if os.path.abspath(app.config["UPLOAD_FOLDER"]).startswith("/tmp"):
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
