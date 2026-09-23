@@ -7,8 +7,12 @@ from config import Config
 from models import db
 from services.ai_classifier import identify_waste
 from services.chatbot import reply
-app=Flask(__name__);app.config.from_object(Config);db.init_app(app)
-if os.path.abspath(app.config["UPLOAD_FOLDER"]).startswith("/tmp"):\n    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+app = Flask(__name__)
+app.config.from_object(Config)
+db.init_app(app)
+application = app
+if os.path.abspath(app.config["UPLOAD_FOLDER"]).startswith("/tmp"):
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 class User(db.Model):
  id=db.Column(db.Integer,primary_key=True);name=db.Column(db.String(120),nullable=False);email=db.Column(db.String(160),unique=True,nullable=False);phone=db.Column(db.String(30));password_hash=db.Column(db.String(255),nullable=False);profile_image=db.Column(db.String(255));environmental_points=db.Column(db.Integer,default=0);created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
 class WasteRecord(db.Model):
