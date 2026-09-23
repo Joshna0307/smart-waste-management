@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<div class="container py-5"><h2>Waste Classification</h2><div class="table-responsive mt-4"><table class="table"><tr><th>Category</th><th>Examples</th><th>Recommended route</th></tr>{% for n,d in waste_info.items() %}<tr><td><b>{{n}}</b></td><td>{{d[0]}}</td><td>{{d[1]}}</td></tr>{% endfor %}</table></div></div>{% endblock %}
