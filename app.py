@@ -15,9 +15,10 @@ application = app
 if os.path.abspath(app.config["UPLOAD_FOLDER"]).startswith("/tmp"):
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 class User(db.Model):
+ __tablename__="users"
  id=db.Column(db.Integer,primary_key=True);name=db.Column(db.String(120),nullable=False);email=db.Column(db.String(160),unique=True,nullable=False);phone=db.Column(db.String(30));password_hash=db.Column(db.String(255),nullable=False);profile_image=db.Column(db.String(255));environmental_points=db.Column(db.Integer,default=0);created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
 class WasteRecord(db.Model):
- id=db.Column(db.Integer,primary_key=True);user_id=db.Column(db.Integer,db.ForeignKey("user.id"),nullable=False);waste_name=db.Column(db.String(120));waste_category=db.Column(db.String(60));confidence=db.Column(db.Float);recyclable=db.Column(db.Boolean);reusable=db.Column(db.Boolean);disposal_method=db.Column(db.String(255));image_path=db.Column(db.String(255));created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
+ id=db.Column(db.Integer,primary_key=True);user_id=db.Column(db.Integer,db.ForeignKey("users.id"),nullable=False);waste_name=db.Column(db.String(120));waste_category=db.Column(db.String(60));confidence=db.Column(db.Float);recyclable=db.Column(db.Boolean);reusable=db.Column(db.Boolean);disposal_method=db.Column(db.String(255));image_path=db.Column(db.String(255));created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
 class CollectionRequest(db.Model):
  id=db.Column(db.Integer,primary_key=True);user_id=db.Column(db.Integer,db.ForeignKey("user.id"),nullable=False);request_id=db.Column(db.String(30),unique=True);waste_type=db.Column(db.String(60));quantity=db.Column(db.String(60));address=db.Column(db.Text);landmark=db.Column(db.String(160));preferred_date=db.Column(db.String(30));preferred_time=db.Column(db.String(30));phone=db.Column(db.String(30));notes=db.Column(db.Text);status=db.Column(db.String(30),default="Pending");created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
 class Notification(db.Model):
