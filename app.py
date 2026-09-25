@@ -38,7 +38,7 @@ class MarketplaceItem(db.Model):
 class ContactMessage(db.Model):
  id=db.Column(db.Integer,primary_key=True);name=db.Column(db.String(120));email=db.Column(db.String(160));phone=db.Column(db.String(30));subject=db.Column(db.String(160));message=db.Column(db.Text);created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
 WASTE_INFO={"Organic":("Food scraps, leaves and biodegradable material","Compost or use an organic bin"),"Plastic":("Bottles, containers and packaging","Clean, dry and send accepted plastics to recycling"),"Paper":("Paper, newspapers and cardboard","Keep dry and recycle"),"Glass":("Bottles and jars","Use glass recycling where accepted"),"Metal":("Cans and metal containers","Rinse and recycle accepted metals"),"E-Waste":("Phones, computers and electronics","Use authorized e-waste collection"),"Hazardous":("Paints, chemicals and certain batteries","Use specialized hazardous-waste collection"),"Biomedical":("Sharps and contaminated clinical waste","Use authorized biomedical channels")}
-CENTERS=[("GreenCycle Recycling","Recycling Center","Main Road",10.76,78.69,"09:00-18:00","Plastic, Paper, Glass, Metal","9000000001"),("EcoDrop E-Waste","E-Waste Center","Tech Park Road",10.77,78.70,"10:00-17:00","E-Waste","9000000002"),("Compost Hub","Composting Center","Market Road",10.75,78.68,"07:00-16:00","Organic","9000000003"),("Dry Waste Point","Waste Collection Point","Bus Stand Road",10.765,78.685,"08:00-20:00","Plastic, Paper, Metal, Glass","9000000004")]
+CENTERS=[]
 def login_required(fn):
  @wraps(fn)
  def wrapper(*a,**k):
@@ -227,13 +227,10 @@ def not_found(e):return render_template("error.html",code=404,message="Page not 
 @app.errorhandler(500)
 def server_error(e):db.session.rollback();return render_template("error.html",code=500,message="Something went wrong"),500
 with app.app_context():
- db.create_all()
- if DisposalCenter.query.count()==0:
-  for n,t,a,lat,lng,h,w,p in CENTERS:db.session.add(DisposalCenter(name=n,center_type=t,address=a,latitude=lat,longitude=lng,opening_hours=h,accepted_waste=w,phone=p))
-  db.session.commit()
-
- if SmartBin.query.count()==0:
-  seeds=[("BIN-001","Main Road",10.7605,78.6905,82,18.2,91),("BIN-002","Tech Park Road",10.7705,78.7005,64,13.4,76),("BIN-003","Market Road",10.7505,78.6805,94,22.8,63),("BIN-004","Bus Stand Road",10.7655,78.6855,47,9.1,88),("BIN-005","College Campus",10.758,78.692,71,15.7,95),("BIN-006","Residential Zone A",10.772,78.687,39,7.2,82),("BIN-007","Industrial Area",10.745,78.705,88,20.5,58),("BIN-008","Community Park",10.755,78.675,28,5.4,97)]
-  for n,l,lat,lng,f,w,b in seeds:db.session.add(SmartBin(name=n,location=l,latitude=lat,longitude=lng,fill_level=f,weight=w,battery=b,status="Online"))
-  db.session.commit()
+ reset_database = os.environ.get("RESET_DATABASE_ON_STARTUP", "").strip().lower() == "true"
+ if reset_database:
+  db.drop_all()
+  db.create_all()
+ else:
+  db.create_all()
 if __name__=="__main__":app.run(debug=True)
