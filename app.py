@@ -37,6 +37,9 @@ class MarketplaceItem(db.Model):
  id=db.Column(db.Integer,primary_key=True);user_id=db.Column(db.Integer,db.ForeignKey("users.id"),nullable=False);title=db.Column(db.String(160),nullable=False);category=db.Column(db.String(80));condition=db.Column(db.String(50));description=db.Column(db.Text);location=db.Column(db.String(180));status=db.Column(db.String(30),default="Available");created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
 class ContactMessage(db.Model):
  id=db.Column(db.Integer,primary_key=True);name=db.Column(db.String(120));email=db.Column(db.String(160));phone=db.Column(db.String(30));subject=db.Column(db.String(160));message=db.Column(db.Text);created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
+class DatabaseResetMarker(db.Model):
+ __tablename__="database_reset_marker"
+ id=db.Column(db.Integer,primary_key=True);completed_at=db.Column(db.DateTime,default=datetime.datetime.utcnow,nullable=False)
 WASTE_INFO={"Organic":("Food scraps, leaves and biodegradable material","Compost or use an organic bin"),"Plastic":("Bottles, containers and packaging","Clean, dry and send accepted plastics to recycling"),"Paper":("Paper, newspapers and cardboard","Keep dry and recycle"),"Glass":("Bottles and jars","Use glass recycling where accepted"),"Metal":("Cans and metal containers","Rinse and recycle accepted metals"),"E-Waste":("Phones, computers and electronics","Use authorized e-waste collection"),"Hazardous":("Paints, chemicals and certain batteries","Use specialized hazardous-waste collection"),"Biomedical":("Sharps and contaminated clinical waste","Use authorized biomedical channels")}
 CENTERS=[]
 def login_required(fn):
@@ -227,10 +230,13 @@ def not_found(e):return render_template("error.html",code=404,message="Page not 
 @app.errorhandler(500)
 def server_error(e):db.session.rollback();return render_template("error.html",code=500,message="Something went wrong"),500
 with app.app_context():
- reset_database = os.environ.get("RESET_DATABASE_ON_STARTUP", "").strip().lower() == "true"
- if reset_database:
+ db.create_all()
+ # One-time clean start for the current deployment. The marker prevents
+ # later Vercel cold starts from deleting newly created user data.
+ reset_database = os.environ.get("RESET_DATABASE_ON_STARTUP", "true").strip().lower() == "true"
+ if reset_database and DatabaseResetMarker.query.count() == 0:
   db.drop_all()
   db.create_all()
- else:
-  db.create_all()
+  db.session.add(DatabaseResetMarker())
+  db.session.commit()
 if __name__=="__main__":app.run(debug=True)
