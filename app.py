@@ -232,21 +232,26 @@ def not_found(e):return render_template("error.html",code=404,message="Page not 
 def server_error(e):db.session.rollback();return render_template("error.html",code=500,message="Something went wrong"),500
 with app.app_context():
  db.create_all()
- # One-time clean start. PostgreSQL advisory locking prevents concurrent
- # Vercel workers from resetting the database at the same time.
+ # Ensure the one-time reset marker exists even when the deployment is
+ # connecting to a pre-existing Neon database whose schema predates this model.
  reset_database = os.environ.get("RESET_DATABASE_ON_STARTUP", "true").strip().lower() == "true"
  if reset_database:
-  engine_url = str(db.engine.url)
-  if engine_url.startswith("postgresql"):
+  engine_name = db.engine.dialect.name
+  if engine_name == "postgresql":
+   db.session.execute(text("CREATE TABLE IF NOT EXISTS database_reset_marker (id INTEGER PRIMARY KEY, completed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)"))
+  else:
+   db.session.execute(text("CREATE TABLE IF NOT EXISTS database_reset_marker (id INTEGER PRIMARY KEY, completed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)"))
+  db.session.commit()
+  if engine_name == "postgresql":
    db.session.execute(text("SELECT pg_advisory_lock(728391)"))
   try:
    if DatabaseResetMarker.query.count() == 0:
     for table in [Notification, WasteRecord, CollectionRequest, WasteReport, MarketplaceItem, SmartBin, ContactMessage, DisposalCenter, User]:
      db.session.query(table).delete(synchronize_session=False)
-    db.session.add(DatabaseResetMarker())
+    db.session.add(DatabaseResetMarker(id=1))
     db.session.commit()
   finally:
-   if engine_url.startswith("postgresql"):
+   if engine_name == "postgresql":
     db.session.execute(text("SELECT pg_advisory_unlock(728391)"))
     db.session.commit()
 if __name__=="__main__":app.run(debug=True)
