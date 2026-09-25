@@ -21,6 +21,9 @@ class WasteRecord(db.Model):
  id=db.Column(db.Integer,primary_key=True);user_id=db.Column(db.Integer,db.ForeignKey("users.id"),nullable=False);waste_name=db.Column(db.String(120));waste_category=db.Column(db.String(60));confidence=db.Column(db.Float);recyclable=db.Column(db.Boolean);reusable=db.Column(db.Boolean);disposal_method=db.Column(db.String(255));image_path=db.Column(db.String(255));created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
 class CollectionRequest(db.Model):
  id=db.Column(db.Integer,primary_key=True);user_id=db.Column(db.Integer,db.ForeignKey("users.id"),nullable=False);request_id=db.Column(db.String(30),unique=True);waste_type=db.Column(db.String(60));quantity=db.Column(db.String(60));address=db.Column(db.Text);landmark=db.Column(db.String(160));preferred_date=db.Column(db.String(30));preferred_time=db.Column(db.String(30));phone=db.Column(db.String(30));notes=db.Column(db.Text);status=db.Column(db.String(30),default="Pending");created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
+class WasteReport(db.Model):
+ __tablename__="waste_reports"
+ id=db.Column(db.Integer,primary_key=True);user_id=db.Column(db.Integer,db.ForeignKey("users.id"),nullable=False);report_id=db.Column(db.String(30),unique=True);issue_type=db.Column(db.String(80));location=db.Column(db.String(255));description=db.Column(db.Text);severity=db.Column(db.String(30),default="Medium");image_path=db.Column(db.String(255));status=db.Column(db.String(30),default="Open");created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
 class Notification(db.Model):
  id=db.Column(db.Integer,primary_key=True);user_id=db.Column(db.Integer,db.ForeignKey("users.id"),nullable=False);title=db.Column(db.String(160));message=db.Column(db.Text);category=db.Column(db.String(50));is_read=db.Column(db.Boolean,default=False);created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
 class DisposalCenter(db.Model):
@@ -97,6 +100,26 @@ def collection():
  if request.method=="POST":
   rid=f"SWM-{datetime.datetime.now().year}-{CollectionRequest.query.count()+1:04d}";c=CollectionRequest(user_id=session["user_id"],request_id=rid,waste_type=request.form.get("waste_type"),quantity=request.form.get("quantity"),address=request.form.get("address"),landmark=request.form.get("landmark"),preferred_date=request.form.get("preferred_date"),preferred_time=request.form.get("preferred_time"),phone=request.form.get("phone"),notes=request.form.get("notes"));db.session.add(c);db.session.add(Notification(user_id=session["user_id"],title="Collection request created",message=f"Request {rid} is pending.",category="Collection"));db.session.commit();flash(f"Collection request {rid} created.","success");return redirect(url_for("collection"))
  return render_template("collection.html",requests=CollectionRequest.query.filter_by(user_id=session["user_id"]).order_by(CollectionRequest.created_at.desc()).all())
+@app.route("/collect-report",methods=["GET","POST"])
+@login_required
+def collect_report():
+ if request.method=="POST":
+  action=request.form.get("action","").strip()
+  if action=="collect":
+   rid=f"SWM-{datetime.datetime.now().year}-{CollectionRequest.query.count()+1:04d}"
+   c=CollectionRequest(user_id=session["user_id"],request_id=rid,waste_type=request.form.get("waste_type"),quantity=request.form.get("quantity"),address=request.form.get("address"),landmark=request.form.get("landmark"),preferred_date=request.form.get("preferred_date"),preferred_time=request.form.get("preferred_time"),phone=request.form.get("phone"),notes=request.form.get("notes"))
+   db.session.add(c);db.session.add(Notification(user_id=session["user_id"],title="Collection request created",message=f"Request {rid} is pending.",category="Collection"));db.session.commit();flash(f"Collection request {rid} created.","success");return redirect(url_for("collect_report"))
+  if action=="report":
+   f=request.files.get("report_image");image_path=None
+   if f and f.filename:
+    ext=f.filename.rsplit(".",1)[-1].lower() if "." in f.filename else ""
+    if ext in app.config["ALLOWED_EXTENSIONS"]:
+     fn=secure_filename(uuid.uuid4().hex+"."+ext);f.save(os.path.join(app.config["UPLOAD_FOLDER"],fn));image_path="uploads/"+fn
+   rid=f"RPT-{datetime.datetime.now().year}-{WasteReport.query.count()+1:04d}"
+   r=WasteReport(user_id=session["user_id"],report_id=rid,issue_type=request.form.get("issue_type"),location=request.form.get("report_location"),description=request.form.get("report_description"),severity=request.form.get("severity","Medium"),image_path=image_path)
+   db.session.add(r);db.session.add(Notification(user_id=session["user_id"],title="Waste report submitted",message=f"Report {rid} was submitted for review.",category="Report"));db.session.commit();flash(f"Waste report {rid} submitted successfully.","success");return redirect(url_for("collect_report"))
+ return render_template("collect_report.html",requests=CollectionRequest.query.filter_by(user_id=session["user_id"]).order_by(CollectionRequest.created_at.desc()).all(),reports=WasteReport.query.filter_by(user_id=session["user_id"]).order_by(WasteReport.created_at.desc()).all())
+
 @app.route("/disposal-map")
 def disposal_map():return render_template("disposal_map.html",centers=DisposalCenter.query.all())
 @app.route("/notifications")
@@ -193,7 +216,7 @@ def admin():
  admin_email=os.environ.get("ADMIN_EMAIL","").strip().lower()
  u=User.query.get(session["user_id"])
  if not admin_email or not u or u.email.lower()!=admin_email: return render_template("error.html",code=403,message="Admin access is not enabled for this account."),403
- return render_template("admin.html",users=User.query.count(),records=WasteRecord.query.count(),requests=CollectionRequest.query.count(),reports=ContactMessage.query.count(),bins=SmartBin.query.count(),items=MarketplaceItem.query.count(),impact=_impact_summary(session["user_id"]))
+ return render_template("admin.html",users=User.query.count(),records=WasteRecord.query.count(),requests=CollectionRequest.query.count(),reports=WasteReport.query.count(),messages=ContactMessage.query.count(),bins=SmartBin.query.count(),items=MarketplaceItem.query.count(),impact=_impact_summary(session["user_id"]))
 
 @app.get("/api/eco-forecast")
 @login_required
