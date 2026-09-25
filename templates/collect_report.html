@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Collect & Report | Smart Waste{% endblock %}
+{% block content %}
+<div class="page-shell">
+<div class="container py-5">
+  <div class="hero-mini mb-4">
+    <div>
+      <p class="eyebrow">COMMUNITY RESPONSE CENTER</p>
+      <h1>Collect & Report</h1>
+      <p class="mb-0">Schedule responsible waste collection or report overflowing bins, illegal dumping and missed services.</p>
+    </div>
+    <div class="hero-actions">
+      <a class="btn btn-light" href="{{url_for('smart_bins')}}">View Smart Bins</a>
+      <a class="btn btn-outline-light" href="{{url_for('disposal_map')}}">Open Map</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-xl-6">
+      <div class="section-panel h-auto">
+        <div class="module-heading"><div><span class="module-icon">🚛</span><div><h3 class="mb-1">Request Waste Collection</h3><p class="text-muted mb-0">Choose a pickup slot and tell the collection team where to come.</p></div></div></div>
+        <form method="post" class="mt-4">
+          <input type="hidden" name="action" value="collect">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Waste type</label><select class="form-select" name="waste_type" required><option value="">Select type</option>{% for x in ['Organic','Plastic','Paper','Glass','Metal','E-Waste','Other'] %}<option>{{x}}</option>{% endfor %}</select></div>
+            <div class="col-md-6"><label class="form-label">Quantity</label><input class="form-control" name="quantity" placeholder="e.g. 2 bags" required></div>
+            <div class="col-12"><label class="form-label">Pickup address</label><input class="form-control" name="address" placeholder="Full pickup address" required></div>
+            <div class="col-md-6"><label class="form-label">Landmark</label><input class="form-control" name="landmark" placeholder="Nearby landmark"></div>
+            <div class="col-md-6"><label class="form-label">Phone</label><input class="form-control" name="phone" placeholder="Contact number" required></div>
+            <div class="col-md-6"><label class="form-label">Preferred date</label><input class="form-control" name="preferred_date" type="date" required></div>
+            <div class="col-md-6"><label class="form-label">Preferred time</label><input class="form-control" name="preferred_time" type="time" required></div>
+            <div class="col-12"><textarea class="form-control" name="notes" rows="3" placeholder="Additional collection notes"></textarea></div>
+          </div>
+          <button class="btn btn-success btn-lg mt-3 w-100">Schedule Collection</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-xl-6">
+      <div class="section-panel h-auto">
+        <div class="module-heading"><div><span class="module-icon report-icon">⚠️</span><div><h3 class="mb-1">Report a Waste Issue</h3><p class="text-muted mb-0">Help the operations team identify problems in your community.</p></div></div></div>
+        <form method="post" enctype="multipart/form-data" class="mt-4">
+          <input type="hidden" name="action" value="report">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Issue type</label><select class="form-select" name="issue_type" required><option value="">Select issue</option><option>Overflowing Bin</option><option>Illegal Dumping</option><option>Missed Collection</option><option>Open Waste Burning</option><option>Damaged Bin</option><option>Other</option></select></div>
+            <div class="col-md-6"><label class="form-label">Severity</label><select class="form-select" name="severity"><option>Low</option><option selected>Medium</option><option>High</option><option>Urgent</option></select></div>
+            <div class="col-12"><label class="form-label">Issue location</label><input class="form-control" name="report_location" placeholder="Street / area / landmark" required></div>
+            <div class="col-12"><label class="form-label">Description</label><textarea class="form-control" name="report_description" rows="4" placeholder="Describe what happened and what needs attention" required></textarea></div>
+            <div class="col-12"><label class="form-label">Photo evidence <span class="text-muted">(optional)</span></label><input class="form-control" name="report_image" type="file" accept=".png,.jpg,.jpeg,.webp"></div>
+          </div>
+          <button class="btn btn-dark btn-lg mt-3 w-100">Submit Waste Report</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-1">
+    <div class="col-xl-6">
+      <div class="section-panel h-auto">
+        <div class="d-flex justify-content-between align-items-center mb-3"><h4 class="mb-0">Collection Tracking</h4><span class="badge text-bg-success">{{requests|length}} requests</span></div>
+        {% for r in requests %}
+        <div class="tracking-row"><div><b>{{r.request_id}}</b><span>{{r.waste_type}} • {{r.quantity}}</span><small>{{r.preferred_date}} at {{r.preferred_time}}</small></div><span class="status-pill status-{{r.status|lower}}">{{r.status}}</span></div>
+        {% else %}<div class="empty-state">No collection requests yet. Create your first pickup above.</div>{% endfor %}
+      </div>
+    </div>
+    <div class="col-xl-6">
+      <div class="section-panel h-auto">
+        <div class="d-flex justify-content-between align-items-center mb-3"><h4 class="mb-0">Reported Issues</h4><span class="badge text-bg-warning">{{reports|length}} reports</span></div>
+        {% for r in reports %}
+        <div class="tracking-row"><div><b>{{r.report_id}}</b><span>{{r.issue_type}} • {{r.location}}</span><small>{{r.created_at.strftime('%d %b %Y, %I:%M %p')}} • {{r.severity}} priority</small></div><span class="status-pill status-open">{{r.status}}</span></div>
+        {% else %}<div class="empty-state">No reports yet. Your reports will appear here after submission.</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
