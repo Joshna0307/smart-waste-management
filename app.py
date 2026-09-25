@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash,check_password_hash
 from werkzeug.utils import secure_filename
 from config import Config
 from models import db
+from sqlalchemy import text
 from services.ai_classifier import identify_waste
 from services.chatbot import reply
 app = Flask(__name__)
@@ -231,12 +232,21 @@ def not_found(e):return render_template("error.html",code=404,message="Page not 
 def server_error(e):db.session.rollback();return render_template("error.html",code=500,message="Something went wrong"),500
 with app.app_context():
  db.create_all()
- # One-time clean start for the current deployment. The marker prevents
- # later Vercel cold starts from deleting newly created user data.
+ # One-time clean start. PostgreSQL advisory locking prevents concurrent
+ # Vercel workers from resetting the database at the same time.
  reset_database = os.environ.get("RESET_DATABASE_ON_STARTUP", "true").strip().lower() == "true"
- if reset_database and DatabaseResetMarker.query.count() == 0:
-  db.drop_all()
-  db.create_all()
-  db.session.add(DatabaseResetMarker())
-  db.session.commit()
+ if reset_database:
+  engine_url = str(db.engine.url)
+  if engine_url.startswith("postgresql"):
+   db.session.execute(text("SELECT pg_advisory_lock(728391)"))
+  try:
+   if DatabaseResetMarker.query.count() == 0:
+    for table in [Notification, WasteRecord, CollectionRequest, WasteReport, MarketplaceItem, SmartBin, ContactMessage, DisposalCenter, User]:
+     db.session.query(table).delete(synchronize_session=False)
+    db.session.add(DatabaseResetMarker())
+    db.session.commit()
+  finally:
+   if engine_url.startswith("postgresql"):
+    db.session.execute(text("SELECT pg_advisory_unlock(728391)"))
+    db.session.commit()
 if __name__=="__main__":app.run(debug=True)
