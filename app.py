@@ -191,13 +191,15 @@ def marketplace():
 @login_required
 def admin():
  admin_email=os.environ.get("ADMIN_EMAIL","").strip().lower()
- if not admin_email or current_user.email.lower()!=admin_email: return render_template("error.html",code=403,message="Admin access is not enabled for this account."),403
+ u=User.query.get(session["user_id"])
+ if not admin_email or not u or u.email.lower()!=admin_email: return render_template("error.html",code=403,message="Admin access is not enabled for this account."),403
  return render_template("admin.html",users=User.query.count(),records=WasteRecord.query.count(),requests=CollectionRequest.query.count(),reports=ContactMessage.query.count(),bins=SmartBin.query.count(),items=MarketplaceItem.query.count(),impact=_impact_summary(session["user_id"]))
 
 @app.get("/api/eco-forecast")
 @login_required
 def api_eco_forecast(): return jsonify(_forecast(session["user_id"]))
-\n@app.errorhandler(404)
+
+@app.errorhandler(404)
 def not_found(e):return render_template("error.html",code=404,message="Page not found"),404
 @app.errorhandler(500)
 def server_error(e):db.session.rollback();return render_template("error.html",code=500,message="Something went wrong"),500
@@ -205,5 +207,10 @@ with app.app_context():
  db.create_all()
  if DisposalCenter.query.count()==0:
   for n,t,a,lat,lng,h,w,p in CENTERS:db.session.add(DisposalCenter(name=n,center_type=t,address=a,latitude=lat,longitude=lng,opening_hours=h,accepted_waste=w,phone=p))
+  db.session.commit()
+
+ if SmartBin.query.count()==0:
+  seeds=[("BIN-001","Main Road",10.7605,78.6905,82,18.2,91),("BIN-002","Tech Park Road",10.7705,78.7005,64,13.4,76),("BIN-003","Market Road",10.7505,78.6805,94,22.8,63),("BIN-004","Bus Stand Road",10.7655,78.6855,47,9.1,88),("BIN-005","College Campus",10.758,78.692,71,15.7,95),("BIN-006","Residential Zone A",10.772,78.687,39,7.2,82),("BIN-007","Industrial Area",10.745,78.705,88,20.5,58),("BIN-008","Community Park",10.755,78.675,28,5.4,97)]
+  for n,l,lat,lng,f,w,b in seeds:db.session.add(SmartBin(name=n,location=l,latitude=lat,longitude=lng,fill_level=f,weight=w,battery=b,status="Online"))
   db.session.commit()
 if __name__=="__main__":app.run(debug=True)
