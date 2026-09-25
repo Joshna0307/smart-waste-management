@@ -1,18 +1,34 @@
-# Smart Waste Management System
+# EcoMind AI – Intelligent Smart Waste & Circular Economy Platform
 
-AI-powered Flask web application for waste identification, classification, recycling guidance, collection requests, disposal-center mapping and EcoBuddy chatbot.
+EcoMind AI extends the Smart Waste Management System into an AI-ready smart-city platform.
 
-## Local setup
-python -m venv venv
-venv\\Scripts\\activate
-pip install -r requirements.txt
-python app.py
+## Core modules
+- AI waste image identification
+- Personal environmental dashboard and eco points
+- Smart-bin telemetry simulation with fill level, weight, battery and priority
+- Waste-generation forecasting from recent activity
+- What-if waste reduction simulator
+- Environmental impact estimates
+- Circular-economy reuse marketplace
+- Disposal/recycling map and collection requests
+- AI assistant and notifications
+- Admin command center (enable with the Vercel ADMIN_EMAIL environment variable)
 
-Open http://127.0.0.1:5000
+## Architecture
+- Python 3 + Flask
+- Flask-SQLAlchemy
+- PostgreSQL/Neon in production, SQLite for local development
+- Bootstrap, Chart.js and Leaflet
+- Vercel-compatible Flask entry point
 
-## Vercel deployment
-This project includes vercel.json and is configured as a Python serverless application. Import the GitHub repository into Vercel and deploy. Set SECRET_KEY as an environment variable in Vercel.
+## New V2 flow
+**Identify → Predict → Monitor → Collect → Reuse/Recycle → Reward → Measure Impact**
 
-**Persistence note:** Vercel serverless storage is not persistent. The included SQLite database is suitable for local/demo use. For production, replace SQLite with a hosted PostgreSQL/MySQL database and use object storage for uploads.
+### IoT-ready design
+The smart-bin module currently uses seeded telemetry so the project works without hardware. It is structured for future ESP32/ultrasonic/load-cell integration through the /api/smart-bins endpoint.
 
-The AI identifier currently uses a clearly labeled local demo classifier. Integrate TensorFlow/PyTorch/YOLO or a vision API for real model inference.
+### Forecast note
+The current forecast is a transparent baseline calculation from the user's last 7 days of recorded waste-identification activity. It is not presented as a trained ML prediction model.
+
+### Impact note
+Environmental impact values are project estimates based on configurable category factors. They are not direct carbon-accounting measurements.
