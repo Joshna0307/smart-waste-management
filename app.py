@@ -90,7 +90,7 @@ def ai_identifier():
   if not f or not f.filename:flash("Choose an image.","danger")
   elif ext not in app.config["ALLOWED_EXTENSIONS"]:flash("Allowed images: PNG, JPG, JPEG, WEBP.","danger")
   else:
-   fn=secure_filename(uuid.uuid4().hex+"."+ext);path=os.path.join(app.config["UPLOAD_FOLDER"],fn);f.save(path);result=identify_waste(path);db.session.add(WasteRecord(user_id=session["user_id"],waste_name=result["name"],waste_category=result["category"],confidence=result["confidence"],recyclable=result["recyclable"],reusable=result["reusable"],disposal_method=result["disposal_method"],image_path="uploads/"+fn));u=User.query.get(session["user_id"]);u.environmental_points+=10;db.session.add(Notification(user_id=u.id,title="Waste identified",message=result["name"]+" was identified using the local demo classifier.",category="AI"));db.session.commit()
+   fn=secure_filename(uuid.uuid4().hex+"."+ext);path=os.path.join(app.config["UPLOAD_FOLDER"],fn);f.save(path)\n   try:\n    result=identify_waste(path)\n   except (RuntimeError, ValueError) as exc:\n    result=None\n    flash(str(exc),"danger")\n   if result and not result.get("uncertain"):\n    db.session.add(WasteRecord(user_id=session["user_id"],waste_name=result["name"],waste_category=result["category"],confidence=result["confidence"],recyclable=result["recyclable"],reusable=result["reusable"],disposal_method=result["disposal_method"],image_path="uploads/"+fn));u=User.query.get(session["user_id"]);u.environmental_points+=10;db.session.add(Notification(user_id=u.id,title="Waste identified",message=result["name"]+" was identified by the trained image classifier.",category="AI"));db.session.commit()
  return render_template("ai_identifier.html",result=result)
 @app.route("/classification")
 @login_required
