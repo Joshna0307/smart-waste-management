@@ -3,7 +3,7 @@ from PIL import Image
 from huggingface_hub import InferenceClient
 
 MODEL_ID = os.environ.get("WASTE_MODEL", "SriramRokkam/wastewise-garbage-cls")
-MIN_CONFIDENCE = float(os.environ.get("WASTE_MIN_CONFIDENCE", "0.55"))
+MIN_CONFIDENCE = float(os.environ.get("WASTE_MIN_CONFIDENCE", "0.65"))
 
 CLASS_MAP = {
     "battery": {
