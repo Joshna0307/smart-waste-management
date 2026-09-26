@@ -1,9 +1,31 @@
+import hashlib
 import os
+import urllib.request
+
+import numpy as np
+import onnxruntime as ort
 from PIL import Image
-from huggingface_hub import InferenceClient
+
 
 MODEL_ID = os.environ.get("WASTE_MODEL", "SriramRokkam/wastewise-garbage-cls")
+MODEL_URL = os.environ.get(
+    "WASTE_MODEL_URL",
+    "https://huggingface.co/SriramRokkam/wastewise-garbage-cls/resolve/main/wastewise-yolo.onnx",
+)
+MODEL_SHA256 = "2b46d491091dbc0ed98a0f1eaee7fe5739c8fd3eb5bd5935396c3b2712e1f7a6"
+MODEL_PATH = "/tmp/wastewise-yolo.onnx"
 MIN_CONFIDENCE = float(os.environ.get("WASTE_MIN_CONFIDENCE", "0.65"))
+
+CLASS_NAMES = [
+    "battery",
+    "biological",
+    "cardboard",
+    "glass",
+    "metal",
+    "paper",
+    "plastic",
+    "trash",
+]
 
 CLASS_MAP = {
     "battery": {
@@ -80,12 +102,46 @@ CLASS_MAP = {
     },
 }
 
-def identify_waste(image_path):
-    """Classify the uploaded image using a trained waste image model.
 
-    The model is served through Hugging Face Inference Providers so the Flask
-    deployment does not need to package a large ML model inside the Vercel
-    function. A HF_TOKEN environment variable is required.
+def _download_model():
+    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
+    temp_path = MODEL_PATH + ".download"
+
+    try:
+        urllib.request.urlretrieve(MODEL_URL, temp_path)
+        with open(temp_path, "rb") as model_file:
+            digest = hashlib.sha256(model_file.read()).hexdigest()
+
+        if digest != MODEL_SHA256:
+            raise RuntimeError("Downloaded AI model failed integrity verification.")
+
+        os.replace(temp_path, MODEL_PATH)
+    except Exception as exc:
+        try:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+        except OSError:
+            pass
+        raise RuntimeError("Unable to download the AI waste model.") from exc
+
+
+def _get_model_path():
+    if not os.path.exists(MODEL_PATH):
+        _download_model()
+    return MODEL_PATH
+
+
+def _get_session():
+    model_path = _get_model_path()
+    return ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
+
+
+def identify_waste(image_path):
+    """Classify an uploaded waste image with the trained WasteWise ONNX model.
+
+    The public model is downloaded lazily to Vercel's writable /tmp directory,
+    verified by SHA-256, and then reused for warm invocations. No HF token or
+    Hugging Face Inference Provider is required.
     """
     try:
         with Image.open(image_path) as im:
@@ -93,24 +149,39 @@ def identify_waste(image_path):
     except Exception as exc:
         raise ValueError("Invalid or unreadable image") from exc
 
-    token = os.environ.get("HF_TOKEN")
-    if not token:
-        raise RuntimeError("AI classifier is not configured. Add HF_TOKEN to the deployment environment.")
+    try:
+        with Image.open(image_path) as image:
+            image = image.convert("RGB").resize((224, 224))
+            arr = np.asarray(image, dtype=np.float32) / 255.0
+            tensor = arr.transpose(2, 0, 1)[np.newaxis, ...]
+    except Exception as exc:
+        raise ValueError("Unable to prepare the uploaded image for AI classification.") from exc
 
-    client = InferenceClient(provider="auto", api_key=token)
+    try:
+        session = _get_session()
+        input_name = session.get_inputs()[0].name
+        outputs = session.run(None, {input_name: tensor})
+    except Exception as exc:
+        raise RuntimeError("The AI waste model could not run on this deployment.") from exc
 
-    with open(image_path, "rb") as image_file:
-        predictions = client.image_classification(
-            image_file.read(),
-            model=MODEL_ID,
-        )
-
-    if not predictions:
+    if not outputs or len(outputs[0]) == 0:
         raise RuntimeError("The AI model returned no prediction.")
 
-    top = max(predictions, key=lambda item: float(item.score))
-    raw_label = str(top.label).strip().lower()
-    confidence = float(top.score)
+    scores = np.asarray(outputs[0][0], dtype=np.float32).reshape(-1)
+    if scores.size != len(CLASS_NAMES):
+        raise RuntimeError(
+            f"Unexpected AI model output: expected {len(CLASS_NAMES)} classes, got {scores.size}."
+        )
+
+    # The model card documents softmax probabilities. If a future model
+    # returns logits instead, normalize them so confidence remains meaningful.
+    if np.any(scores < 0) or np.any(scores > 1) or not np.isclose(scores.sum(), 1.0, atol=1e-3):
+        exp_scores = np.exp(scores - np.max(scores))
+        scores = exp_scores / exp_scores.sum()
+
+    class_id = int(np.argmax(scores))
+    raw_label = CLASS_NAMES[class_id]
+    confidence = float(scores[class_id])
 
     info = CLASS_MAP.get(raw_label)
     if info is None:
@@ -128,6 +199,7 @@ def identify_waste(image_path):
             "safety": "Do not rely on this result for hazardous-waste disposal.",
             "is_demo": False,
             "uncertain": True,
+            "model": MODEL_ID,
         }
 
     return {
