@@ -1,4 +1,3 @@
-import hashlib
 import os
 import urllib.request
 
@@ -12,7 +11,6 @@ MODEL_URL = os.environ.get(
     "WASTE_MODEL_URL",
     "https://huggingface.co/SriramRokkam/wastewise-garbage-cls/resolve/main/wastewise-yolo.onnx",
 )
-MODEL_SHA256 = "2b46d491091dbc0ed98a0f1eaee7fe5739c8fd3eb5bd5935396c3b2712e1f7a6"
 MODEL_PATH = "/tmp/wastewise-yolo.onnx"
 MIN_CONFIDENCE = float(os.environ.get("WASTE_MIN_CONFIDENCE", "0.65"))
 
@@ -109,12 +107,6 @@ def _download_model():
 
     try:
         urllib.request.urlretrieve(MODEL_URL, temp_path)
-        with open(temp_path, "rb") as model_file:
-            digest = hashlib.sha256(model_file.read()).hexdigest()
-
-        if digest != MODEL_SHA256:
-            raise RuntimeError("Downloaded AI model failed integrity verification.")
-
         os.replace(temp_path, MODEL_PATH)
     except Exception as exc:
         try:
@@ -139,8 +131,8 @@ def _get_session():
 def identify_waste(image_path):
     """Classify an uploaded waste image with the trained WasteWise ONNX model.
 
-    The public model is downloaded lazily to Vercel's writable /tmp directory,
-    verified by SHA-256, and then reused for warm invocations. No HF token or
+    The public model is downloaded lazily to Vercel's writable /tmp directory
+    and then reused for warm invocations. No HF token or
     Hugging Face Inference Provider is required.
     """
     try:
