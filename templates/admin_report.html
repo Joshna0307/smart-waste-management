@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Report {{ report.report_id }} • Admin{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <a href="{{ url_for('admin') }}" class="btn btn-sm btn-outline-light mb-3"><i class="fa-solid fa-arrow-left me-1"></i>Back to Admin</a>
+  <div class="hero-mini mb-4">
+    <div>
+      <p class="eyebrow mb-2">USER REPORT DETAILS</p>
+      <h1 class="h2 mb-2">{{ report.report_id }}</h1>
+      <p class="mb-0">{{ report.issue_type or 'Waste issue' }} • {{ report.location or 'Location not provided' }}</p>
+    </div>
+    <span class="badge text-bg-warning align-self-start">{{ report.status }}</span>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="section-panel">
+        <h4>Issue Information</h4>
+        <dl class="row mt-3">
+          <dt class="col-sm-4">Issue Type</dt><dd class="col-sm-8">{{ report.issue_type or '—' }}</dd>
+          <dt class="col-sm-4">Location</dt><dd class="col-sm-8">{{ report.location or '—' }}</dd>
+          <dt class="col-sm-4">Severity</dt><dd class="col-sm-8">{{ report.severity or '—' }}</dd>
+          <dt class="col-sm-4">Submitted</dt><dd class="col-sm-8">{{ report.created_at.strftime('%d %b %Y, %I:%M %p') if report.created_at else '—' }}</dd>
+          <dt class="col-sm-4">Description</dt><dd class="col-sm-8" style="white-space:pre-wrap">{{ report.description or 'No description provided.' }}</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="section-panel mb-4">
+        <h5>Reported By</h5>
+        <p class="mb-1"><strong>{{ user.name if user else 'Unknown user' }}</strong></p>
+        <p class="text-muted mb-0">{{ user.email if user else '—' }}</p>
+      </div>
+      <div class="section-panel mb-4">
+        <h5>Update Status</h5>
+        <form method="post" action="{{ url_for('admin_report_status', report_id=report.id) }}">
+          <select name="status" class="form-select mb-3">
+            {% for s in ['Open','In Progress','Resolved','Rejected'] %}
+            <option value="{{ s }}" {% if report.status == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-success w-100"><i class="fa-solid fa-check me-2"></i>Save Status</button>
+        </form>
+      </div>
+      {% if report.image_path %}
+      <div class="section-panel">
+        <h5>Uploaded Evidence</h5>
+        <img src="{{ url_for('static', filename=report.image_path.replace('uploads/','uploads/')) }}" class="img-fluid rounded" alt="Reported waste issue">
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
