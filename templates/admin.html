@@ -31,6 +31,57 @@
     {% endfor %}
   </div>
 
+  <div class="section-panel mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div>
+        <p class="eyebrow mb-1">USER REPORTS & ISSUES</p>
+        <h4 class="mb-1">Community Waste Reports</h4>
+        <p class="text-muted mb-0">View issues submitted by users and update their progress.</p>
+      </div>
+      <span class="badge text-bg-warning">{{ reports }} total</span>
+    </div>
+
+    {% if report_rows %}
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Report</th><th>Issue</th><th>Location</th><th>Severity</th><th>Status</th><th>Submitted</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for report in report_rows %}
+          <tr>
+            <td><strong>{{ report.report_id }}</strong></td>
+            <td>{{ report.issue_type or '—' }}</td>
+            <td>{{ report.location or '—' }}</td>
+            <td><span class="badge {% if report.severity == 'Urgent' %}text-bg-danger{% elif report.severity == 'High' %}text-bg-warning{% else %}text-bg-secondary{% endif %}">{{ report.severity }}</span></td>
+            <td>
+              <form method="post" action="{{ url_for('admin_report_status', report_id=report.id) }}" class="d-flex gap-1">
+                <select name="status" class="form-select form-select-sm">
+                  {% for s in ['Open','In Progress','Resolved','Rejected'] %}
+                  <option value="{{ s }}" {% if report.status == s %}selected{% endif %}>{{ s }}</option>
+                  {% endfor %}
+                </select>
+                <button class="btn btn-sm btn-success" title="Update status"><i class="fa-solid fa-check"></i></button>
+              </form>
+            </td>
+            <td>{{ report.created_at.strftime('%d %b %Y, %I:%M %p') if report.created_at else '—' }}</td>
+            <td><a class="btn btn-sm btn-outline-light" href="{{ url_for('admin_report_view', report_id=report.id) }}"><i class="fa-solid fa-eye me-1"></i>View</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state py-4">
+      <i class="fa-solid fa-circle-check fa-2x mb-2"></i>
+      <h5>No user reports yet</h5>
+      <p class="text-muted mb-0">New issues submitted through Collect & Report will appear here.</p>
+    </div>
+    {% endif %}
+  </div>
+
   <div class="row g-4">
     <div class="col-lg-7">
       <div class="section-panel">
