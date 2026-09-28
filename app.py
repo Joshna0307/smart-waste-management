@@ -246,6 +246,33 @@ def marketplace():
    db.session.add(MarketplaceItem(user_id=session["user_id"],title=title,category=request.form.get("category"),condition=request.form.get("condition"),description=request.form.get("description"),location=request.form.get("location")));db.session.commit();flash("Reusable item listed successfully.","success");return redirect(url_for("marketplace"))
  return render_template("marketplace.html",items=MarketplaceItem.query.filter_by(status="Available").order_by(MarketplaceItem.created_at.desc()).all())
 
+@app.route("/admin/collections/<int:request_id>")
+@admin_required
+def admin_collection_view(request_id):
+ collection=CollectionRequest.query.get_or_404(request_id)
+ user=User.query.get(collection.user_id)
+ return render_template("admin_collection.html",collection=collection,user=user)
+
+@app.post("/admin/collections/<int:request_id>/status")
+@admin_required
+def admin_collection_status(request_id):
+ collection=CollectionRequest.query.get_or_404(request_id)
+ status=request.form.get("status","Pending").strip()
+ allowed={"Pending","Confirmed","Assigned","Picked Up","Completed","Cancelled"}
+ if status not in allowed:
+  flash("Invalid collection status.","danger")
+  return redirect(url_for("admin"))
+ collection.status=status
+ db.session.add(Notification(
+  user_id=collection.user_id,
+  title=f"Collection {collection.request_id} updated",
+  message=f"Your waste collection request is now marked as {status}.",
+  category="Collection"
+ ))
+ db.session.commit()
+ flash(f"Collection {collection.request_id} status updated to {status}.","success")
+ return redirect(url_for("admin"))
+
 @app.route("/admin/reports/<int:report_id>")
 @admin_required
 def admin_report_view(report_id):
@@ -276,7 +303,7 @@ def admin_report_status(report_id):
 @app.route("/admin")
 @admin_required
 def admin():
- return render_template("admin.html",users=User.query.count(),records=WasteRecord.query.count(),requests=CollectionRequest.query.count(),reports=WasteReport.query.count(),messages=ContactMessage.query.count(),bins=SmartBin.query.count(),items=MarketplaceItem.query.count(),impact=_impact_summary(None),report_rows=WasteReport.query.order_by(WasteReport.created_at.desc()).all())
+ return render_template("admin.html",users=User.query.count(),records=WasteRecord.query.count(),requests=CollectionRequest.query.count(),reports=WasteReport.query.count(),messages=ContactMessage.query.count(),bins=SmartBin.query.count(),items=MarketplaceItem.query.count(),impact=_impact_summary(None),report_rows=WasteReport.query.order_by(WasteReport.created_at.desc()).all(),collection_rows=CollectionRequest.query.order_by(CollectionRequest.created_at.desc()).all())
 
 @app.get("/api/eco-forecast")
 @login_required
