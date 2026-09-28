@@ -14,6 +14,7 @@ def _database_url():
 
 class Config:
     ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "")
+    ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
     SECRET_KEY = os.environ.get("SECRET_KEY", "smart-waste-dev-key-change-me")
     SQLALCHEMY_DATABASE_URI = _database_url()
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
