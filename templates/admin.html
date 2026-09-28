@@ -82,6 +82,52 @@
     {% endif %}
   </div>
 
+  <div class="section-panel mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div>
+        <p class="eyebrow mb-1">REQUEST WASTE COLLECTION</p>
+        <h4 class="mb-1">Collection Requests</h4>
+        <p class="text-muted mb-0">Review user pickup requests and update their collection progress.</p>
+      </div>
+      <span class="badge text-bg-info">{{ requests }} total</span>
+    </div>
+    {% if collection_rows %}
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead><tr><th>Request</th><th>Waste</th><th>Quantity</th><th>Preferred Pickup</th><th>Status</th><th>Submitted</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for collection in collection_rows %}
+          <tr>
+            <td><strong>{{ collection.request_id }}</strong></td>
+            <td>{{ collection.waste_type or '—' }}</td>
+            <td>{{ collection.quantity or '—' }}</td>
+            <td>{{ collection.preferred_date or '—' }}<br><small class="text-muted">{{ collection.preferred_time or '' }}</small></td>
+            <td>
+              <form method="post" action="{{ url_for('admin_collection_status', request_id=collection.id) }}" class="d-flex gap-1">
+                <select name="status" class="form-select form-select-sm">
+                  {% for s in ['Pending','Confirmed','Assigned','Picked Up','Completed','Cancelled'] %}
+                  <option value="{{ s }}" {% if collection.status == s %}selected{% endif %}>{{ s }}</option>
+                  {% endfor %}
+                </select>
+                <button class="btn btn-sm btn-success" title="Update status"><i class="fa-solid fa-check"></i></button>
+              </form>
+            </td>
+            <td>{{ collection.created_at.strftime('%d %b %Y, %I:%M %p') if collection.created_at else '—' }}</td>
+            <td><a class="btn btn-sm btn-outline-light" href="{{ url_for('admin_collection_view', request_id=collection.id) }}"><i class="fa-solid fa-eye me-1"></i>View</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state py-4">
+      <i class="fa-solid fa-truck fa-2x mb-2"></i>
+      <h5>No collection requests yet</h5>
+      <p class="text-muted mb-0">Requests submitted by users will appear here.</p>
+    </div>
+    {% endif %}
+  </div>
+
   <div class="row g-4">
     <div class="col-lg-7">
       <div class="section-panel">
