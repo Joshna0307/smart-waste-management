@@ -49,6 +49,14 @@ def login_required(fn):
   if "user_id" not in session: flash("Please log in to continue.","warning");return redirect(url_for("login"))
   return fn(*a,**k)
  return wrapper
+
+def admin_required(fn):
+ @wraps(fn)
+ def wrapper(*a,**k):
+  if not session.get("is_admin"):
+   flash("Please use the separate Admin Login.","warning");return redirect(url_for("admin_login"))
+  return fn(*a,**k)
+ return wrapper
 @app.context_processor
 def globals():
  u=User.query.get(session.get("user_id")) if session.get("user_id") else None
@@ -60,7 +68,9 @@ def index(): return render_template("index.html")
 def signup():
  if request.method=="POST":
   name=request.form.get("name","").strip();email=request.form.get("email","").strip().lower();p=request.form.get("password","");c=request.form.get("confirm_password","")
-  if not name or "@" not in email or len(p)<6 or p!=c: flash("Enter valid details and matching password (6+ characters).","danger")
+  admin_email=os.environ.get("ADMIN_EMAIL","").strip().lower()
+  if admin_email and email==admin_email: flash("This email is reserved for Admin Login. Please use the Admin Login page.","danger")
+  elif not name or "@" not in email or len(p)<6 or p!=c: flash("Enter valid details and matching password (6+ characters).","danger")
   elif User.query.filter_by(email=email).first(): flash("Email already registered.","danger")
   else: db.session.add(User(name=name,email=email,phone=request.form.get("phone"),password_hash=generate_password_hash(p)));db.session.commit();flash("Account created. Please log in.","success");return redirect(url_for("login"))
  return render_template("signup.html")
@@ -77,14 +87,13 @@ def admin_login():
   email=request.form.get("email","").strip().lower()
   password=request.form.get("password","")
   admin_email=os.environ.get("ADMIN_EMAIL","").strip().lower()
-  u=User.query.filter_by(email=email).first()
-  if admin_email and email==admin_email and u and check_password_hash(u.password_hash,password):
+  admin_password=os.environ.get("ADMIN_PASSWORD","")
+  if admin_email and admin_password and email==admin_email and password==admin_password:
    session.clear()
-   session["user_id"]=u.id
    session["is_admin"]=True
    flash("Admin login successful.","success")
    return redirect(url_for("admin"))
-  flash("Invalid admin credentials or admin account is not configured.","danger")
+  flash("Invalid admin credentials or admin credentials are not configured.","danger")
  return render_template("admin_login.html")
 
 @app.route("/logout")
@@ -185,8 +194,8 @@ def api_read():Notification.query.filter_by(user_id=session["user_id"]).update({
 
 IMPACT_FACTORS={"Plastic":0.8,"Paper":1.2,"Glass":0.3,"Metal":2.0,"Organic":0.2,"E-Waste":1.5,"Textile":1.1,"Hazardous":0.4,"Biomedical":0.1}
 
-def _impact_summary(uid):
- records=WasteRecord.query.filter_by(user_id=uid).all()
+def _impact_summary(uid=None):
+ records=WasteRecord.query.all() if uid is None else WasteRecord.query.filter_by(user_id=uid).all()
  totals={}
  for r in records: totals[r.waste_category]=totals.get(r.waste_category,0)+1
  diverted=sum(totals.get(k,0) for k in ("Plastic","Paper","Glass","Metal","E-Waste","Textile"))
@@ -238,12 +247,9 @@ def marketplace():
  return render_template("marketplace.html",items=MarketplaceItem.query.filter_by(status="Available").order_by(MarketplaceItem.created_at.desc()).all())
 
 @app.route("/admin")
-@login_required
+@admin_required
 def admin():
- admin_email=os.environ.get("ADMIN_EMAIL","").strip().lower()
- u=User.query.get(session["user_id"])
- if not session.get("is_admin") or not admin_email or not u or u.email.lower()!=admin_email: return render_template("error.html",code=403,message="Admin access is not enabled for this account."),403
- return render_template("admin.html",users=User.query.count(),records=WasteRecord.query.count(),requests=CollectionRequest.query.count(),reports=WasteReport.query.count(),messages=ContactMessage.query.count(),bins=SmartBin.query.count(),items=MarketplaceItem.query.count(),impact=_impact_summary(session["user_id"]))
+ return render_template("admin.html",users=User.query.count(),records=WasteRecord.query.count(),requests=CollectionRequest.query.count(),reports=WasteReport.query.count(),messages=ContactMessage.query.count(),bins=SmartBin.query.count(),items=MarketplaceItem.query.count(),impact=_impact_summary(None))
 
 @app.get("/api/eco-forecast")
 @login_required
