@@ -1,183 +1,102 @@
-import os
-import urllib.request
-
 import numpy as np
-import onnxruntime as ort
-from PIL import Image
+from PIL import Image, ImageOps
 
+MODEL_ID = "EcoMind-Custom-Waste-v1"
+MIN_CONFIDENCE = float(__import__("os").environ.get("WASTE_MIN_CONFIDENCE", "0.55"))
 
-MODEL_ID = os.environ.get("WASTE_MODEL", "SriramRokkam/wastewise-garbage-cls")
-MODEL_URL = os.environ.get(
-    "WASTE_MODEL_URL",
-    "https://huggingface.co/SriramRokkam/wastewise-garbage-cls/resolve/main/wastewise-yolo.onnx",
-)
-MODEL_PATH = "/tmp/wastewise-yolo.onnx"
-MIN_CONFIDENCE = float(os.environ.get("WASTE_MIN_CONFIDENCE", "0.65"))
+CLASS_CENTROIDS = np.array([
+    [0.416213,0.388344,0.376861,0.190632,0.179537,0.185657,0.395367,0.175825,0.087266,0.096794,0.253845,0.265432,0.322865],
+    [0.480337,0.459149,0.427165,0.201454,0.199595,0.196010,0.461838,0.198493,0.085828,0.112663,0.133908,0.055329,0.084157],
+    [0.743411,0.650470,0.600640,0.211624,0.245673,0.269615,0.672581,0.231460,0.079053,0.056761,0.226433,0.005791,0.343530],
+    [0.437999,0.523402,0.578288,0.242853,0.190815,0.202250,0.504124,0.186356,0.089461,0.080682,0.382864,0.762558,0.109242],
+], dtype=np.float32)
 
-CLASS_NAMES = [
-    "battery",
-    "biological",
-    "cardboard",
-    "glass",
-    "metal",
-    "paper",
-    "plastic",
-    "trash",
-]
+CLASS_NAMES = ["pen", "paper_book", "food_waste", "plastic_bottle"]
 
 CLASS_MAP = {
-    "battery": {
-        "name": "Battery",
-        "category": "Hazardous",
-        "recyclable": True,
-        "reusable": False,
-        "disposal_method": "Use an authorized battery/e-waste collection point",
-        "environmental_impact": "Batteries can release hazardous materials if disposed of incorrectly.",
-        "safety": "Do not puncture, burn or place in household waste.",
-    },
-    "biological": {
-        "name": "Biological Waste",
-        "category": "Organic",
-        "recyclable": False,
-        "reusable": True,
-        "disposal_method": "Compost or use an organic-waste bin",
-        "environmental_impact": "Organic waste can generate methane when landfilled.",
-        "safety": "Avoid handling contaminated biological material directly.",
-    },
-    "cardboard": {
-        "name": "Cardboard",
-        "category": "Paper",
-        "recyclable": True,
-        "reusable": True,
-        "disposal_method": "Keep dry and send to paper/cardboard recycling",
-        "environmental_impact": "Recovering cardboard reduces landfill volume and raw-material demand.",
-        "safety": "Flatten boxes and remove food contamination where possible.",
-    },
-    "glass": {
-        "name": "Glass",
-        "category": "Glass",
-        "recyclable": True,
-        "reusable": True,
-        "disposal_method": "Use a glass recycling collection point",
-        "environmental_impact": "Glass can be recycled repeatedly when properly collected.",
-        "safety": "Handle broken glass carefully.",
-    },
-    "metal": {
-        "name": "Metal",
-        "category": "Metal",
-        "recyclable": True,
-        "reusable": True,
-        "disposal_method": "Rinse and send accepted metal to recycling",
-        "environmental_impact": "Metal recovery can reduce demand for new raw materials.",
-        "safety": "Watch for sharp edges.",
-    },
-    "paper": {
-        "name": "Paper",
-        "category": "Paper",
-        "recyclable": True,
-        "reusable": True,
-        "disposal_method": "Keep dry and recycle with accepted paper",
-        "environmental_impact": "Paper recovery reduces landfill volume and raw-material demand.",
-        "safety": "Keep paper dry and free from hazardous contamination.",
-    },
-    "plastic": {
-        "name": "Plastic",
+    "pen": {
+        "name": "Pen / Plastic Stationery",
         "category": "Plastic",
         "recyclable": True,
         "reusable": True,
-        "disposal_method": "Clean, dry and send accepted plastic to recycling",
-        "environmental_impact": "Plastic can persist for a long time when littered or landfilled.",
-        "safety": "Do not burn plastic.",
+        "disposal_method": "Collect with accepted plastic/stationery recycling; avoid littering.",
+        "environmental_impact": "Plastic stationery can persist in the environment when discarded as mixed waste.",
+        "safety": "Do not burn plastic stationery.",
     },
-    "trash": {
-        "name": "General Waste",
-        "category": "General",
+    "paper_book": {
+        "name": "Paper / Book",
+        "category": "Paper",
+        "recyclable": True,
+        "reusable": True,
+        "disposal_method": "Reuse if possible; otherwise keep dry and send to paper recycling.",
+        "environmental_impact": "Paper recovery reduces landfill volume and demand for new raw materials.",
+        "safety": "Keep paper dry and free from hazardous contamination.",
+    },
+    "food_waste": {
+        "name": "Food / Disposable Waste",
+        "category": "Organic",
         "recyclable": False,
         "reusable": False,
-        "disposal_method": "Use the appropriate municipal general-waste channel",
-        "environmental_impact": "Mixed waste is harder to recover and can increase landfill use.",
-        "safety": "Do not handle unknown hazardous materials directly.",
+        "disposal_method": "Separate food waste for composting/organic collection; separate clean recyclables.",
+        "environmental_impact": "Organic waste can generate methane when landfilled.",
+        "safety": "Avoid direct contact with contaminated waste.",
+    },
+    "plastic_bottle": {
+        "name": "Plastic Bottle",
+        "category": "Plastic",
+        "recyclable": True,
+        "reusable": True,
+        "disposal_method": "Empty, rinse, keep dry and send to accepted plastic recycling.",
+        "environmental_impact": "Recycling plastic bottles can reduce plastic entering landfill and the environment.",
+        "safety": "Do not burn plastic bottles.",
     },
 }
 
+def _features(image):
+    image = image.convert("RGB").resize((64, 64))
+    arr = np.asarray(image, dtype=np.float32) / 255.0
+    gray = 0.299 * arr[:, :, 0] + 0.587 * arr[:, :, 1] + 0.114 * arr[:, :, 2]
+    gx = np.diff(gray, axis=1)
+    gy = np.diff(gray, axis=0)
+    saturation = (arr.max(axis=2) - arr.min(axis=2)) / (arr.max(axis=2) + 1e-6)
 
-def _download_model():
-    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
-    temp_path = MODEL_PATH + ".download"
+    values = np.array([
+        *arr.mean(axis=(0, 1)),
+        *arr.std(axis=(0, 1)),
+        gray.mean(),
+        gray.std(),
+        np.mean(np.abs(gx)),
+        np.mean(np.abs(gy)),
+        saturation.mean(),
+        np.mean(arr[:, :, 2] > arr[:, :, 0] * 1.05),
+        np.mean(arr[:, :, 0] > arr[:, :, 1] * 1.15),
+    ], dtype=np.float32)
+    return values
 
-    try:
-        urllib.request.urlretrieve(MODEL_URL, temp_path)
-        os.replace(temp_path, MODEL_PATH)
-    except Exception as exc:
-        try:
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
-        except OSError:
-            pass
-        raise RuntimeError("Unable to download the AI waste model.") from exc
-
-
-def _get_model_path():
-    if not os.path.exists(MODEL_PATH):
-        _download_model()
-    return MODEL_PATH
-
-
-def _get_session():
-    model_path = _get_model_path()
-    return ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
-
+def _predict(features):
+    distances = np.linalg.norm(CLASS_CENTROIDS - features, axis=1)
+    logits = -8.0 * distances
+    logits -= logits.max()
+    scores = np.exp(logits)
+    scores /= scores.sum()
+    return int(np.argmax(scores)), float(scores.max())
 
 def identify_waste(image_path):
-    """Classify an uploaded waste image with the trained WasteWise ONNX model.
-
-    The public model is downloaded lazily to Vercel's writable /tmp directory
-    and then reused for warm invocations. No HF token or
-    Hugging Face Inference Provider is required.
-    """
     try:
-        with Image.open(image_path) as im:
-            im.verify()
+        with Image.open(image_path) as image:
+            image.verify()
     except Exception as exc:
         raise ValueError("Invalid or unreadable image") from exc
 
     try:
         with Image.open(image_path) as image:
-            image = image.convert("RGB").resize((224, 224))
-            arr = np.asarray(image, dtype=np.float32) / 255.0
-            tensor = arr.transpose(2, 0, 1)[np.newaxis, ...]
+            features = _features(image)
     except Exception as exc:
         raise ValueError("Unable to prepare the uploaded image for AI classification.") from exc
 
-    try:
-        session = _get_session()
-        input_name = session.get_inputs()[0].name
-        outputs = session.run(None, {input_name: tensor})
-    except Exception as exc:
-        raise RuntimeError("The AI waste model could not run on this deployment.") from exc
-
-    if not outputs or len(outputs[0]) == 0:
-        raise RuntimeError("The AI model returned no prediction.")
-
-    scores = np.asarray(outputs[0][0], dtype=np.float32).reshape(-1)
-    if scores.size != len(CLASS_NAMES):
-        raise RuntimeError(
-            f"Unexpected AI model output: expected {len(CLASS_NAMES)} classes, got {scores.size}."
-        )
-
-    # The model card documents softmax probabilities. If a future model
-    # returns logits instead, normalize them so confidence remains meaningful.
-    if np.any(scores < 0) or np.any(scores > 1) or not np.isclose(scores.sum(), 1.0, atol=1e-3):
-        exp_scores = np.exp(scores - np.max(scores))
-        scores = exp_scores / exp_scores.sum()
-
-    class_id = int(np.argmax(scores))
+    class_id, confidence = _predict(features)
     raw_label = CLASS_NAMES[class_id]
-    confidence = float(scores[class_id])
-
-    info = CLASS_MAP.get(raw_label)
-    if info is None:
-        raise RuntimeError(f"Unsupported model class returned: {raw_label}")
+    info = CLASS_MAP[raw_label]
 
     if confidence < MIN_CONFIDENCE:
         return {
@@ -186,8 +105,8 @@ def identify_waste(image_path):
             "confidence": confidence,
             "recyclable": False,
             "reusable": False,
-            "disposal_method": "Please upload a clearer, single-waste image",
-            "environmental_impact": "The model confidence is below the safety threshold.",
+            "disposal_method": "Please upload a clearer image containing one main waste item.",
+            "environmental_impact": "The custom model confidence is below the configured threshold.",
             "safety": "Do not rely on this result for hazardous-waste disposal.",
             "is_demo": False,
             "uncertain": True,
