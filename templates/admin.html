@@ -1,1 +1,65 @@
-{% extends 'base.html' %}{% block title %}Admin Command Center{% endblock %}{% block content %}<div class="container py-5"><p class="eyebrow">OPERATIONS CONTROL</p><h2>EcoMind Admin Command Center</h2><div class="row g-3 my-4">{% for label,val in [('Users',users),('Waste Records',records),('Collection Requests',requests),('Waste Reports',reports),('Messages',messages),('Smart Bins',bins),('Marketplace Items',items)] %}<div class="col-6 col-lg-2"><div class="stat"><span>{{label}}</span><strong>{{val}}</strong></div></div>{% endfor %}</div><div class="section-panel"><h4>System Modules</h4><div class="row g-3 mt-2"><div class="col-md-3"><a class="cardx d-block text-decoration-none" href="{{url_for('smart_bins')}}">📡 Smart Bin Monitoring</a></div><div class="col-md-3"><a class="cardx d-block text-decoration-none" href="{{url_for('collect_report')}}">🚛 Collection & Reports</a></div><div class="col-md-3"><a class="cardx d-block text-decoration-none" href="{{url_for('marketplace')}}">♻️ Circular Marketplace</a></div><div class="col-md-3"><a class="cardx d-block text-decoration-none" href="{{url_for('eco_simulator')}}">🔮 Forecast Simulator</a></div></div></div></div>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Admin Command Center{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="hero-mini mb-4">
+    <div>
+      <p class="eyebrow mb-2">ADMIN CONTROL CENTER</p>
+      <h1 class="h2 mb-2">EcoMind Operations Dashboard</h1>
+      <p class="mb-0">Monitor users, AI waste activity, collections, reports, smart bins and circular-economy activity.</p>
+    </div>
+    <a class="btn btn-light" href="{{ url_for('dashboard') }}"><i class="fa-solid fa-arrow-left me-2"></i>User Dashboard</a>
+  </div>
+
+  <div class="row g-3 mb-4">
+    {% for label,val,icon in [
+      ('Users',users,'fa-users'),
+      ('AI Waste Records',records,'fa-robot'),
+      ('Collection Requests',requests,'fa-truck'),
+      ('Waste Reports',reports,'fa-triangle-exclamation'),
+      ('Messages',messages,'fa-envelope'),
+      ('Smart Bins',bins,'fa-satellite-dish'),
+      ('Marketplace Items',items,'fa-recycle')
+    ] %}
+    <div class="col-6 col-md-4 col-xl">
+      <div class="stat">
+        <i class="fa-solid {{ icon }} mb-2" style="color:var(--g)"></i>
+        <span>{{ label }}</span>
+        <strong>{{ val }}</strong>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="section-panel">
+        <div class="module-heading">
+          <div><div class="module-icon">⚙️</div><div><p class="eyebrow mb-1">SYSTEM MODULES</p><h4 class="mb-0">Administration Tools</h4></div></div>
+        </div>
+        <div class="row g-3 mt-2">
+          <div class="col-md-6"><a class="cardx d-block text-decoration-none" href="{{url_for('smart_bins')}}"><i class="fa-solid fa-satellite-dish"></i><h5>Smart Bin Monitoring</h5><p class="text-muted mb-0">Review connected/available bin status and sensor readings.</p></a></div>
+          <div class="col-md-6"><a class="cardx d-block text-decoration-none" href="{{url_for('collect_report')}}"><i class="fa-solid fa-truck"></i><h5>Collection & Reports</h5><p class="text-muted mb-0">Review the collection and community-report workflow.</p></a></div>
+          <div class="col-md-6"><a class="cardx d-block text-decoration-none" href="{{url_for('marketplace')}}"><i class="fa-solid fa-recycle"></i><h5>Circular Marketplace</h5><p class="text-muted mb-0">View reusable items listed by users.</p></a></div>
+          <div class="col-md-6"><a class="cardx d-block text-decoration-none" href="{{url_for('eco_simulator')}}"><i class="fa-solid fa-chart-line"></i><h5>Forecast Simulator</h5><p class="text-muted mb-0">Explore the project's waste-reduction scenario tool.</p></a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="impact-card h-100">
+        <p class="eyebrow">ENVIRONMENTAL ACTIVITY</p>
+        <h4>Project Impact</h4>
+        <div class="row g-3 mt-2">
+          <div class="col-6"><small>AI records</small><strong>{{ impact.records }}</strong></div>
+          <div class="col-6"><small>Diverted items</small><strong>{{ impact.diverted_items }}</strong></div>
+          <div class="col-6"><small>Estimated CO₂ factor score</small><strong>{{ impact.co2_saved }}</strong></div>
+          <div class="col-6"><small>Landfill avoided estimate</small><strong>{{ impact.landfill_avoided }}</strong></div>
+        </div>
+        <hr>
+        <small>Impact values are project estimates based on configured factors, not certified carbon accounting.</small>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
