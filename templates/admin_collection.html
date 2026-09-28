@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Collection Request • Admin{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="hero-mini mb-4">
+    <div>
+      <p class="eyebrow mb-2">REQUEST WASTE COLLECTION</p>
+      <h1 class="h2 mb-2">{{ collection.request_id }}</h1>
+      <p class="mb-0">Review pickup details and manage the collection status.</p>
+    </div>
+    <a class="btn btn-light" href="{{ url_for('admin') }}"><i class="fa-solid fa-arrow-left me-2"></i>Admin Dashboard</a>
+  </div>
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="section-panel">
+        <p class="eyebrow">COLLECTION DETAILS</p>
+        <div class="row g-3">
+          <div class="col-md-6"><small class="text-muted">Waste Type</small><div class="fw-semibold">{{ collection.waste_type or '—' }}</div></div>
+          <div class="col-md-6"><small class="text-muted">Quantity</small><div class="fw-semibold">{{ collection.quantity or '—' }}</div></div>
+          <div class="col-md-6"><small class="text-muted">Preferred Date</small><div class="fw-semibold">{{ collection.preferred_date or '—' }}</div></div>
+          <div class="col-md-6"><small class="text-muted">Preferred Time</small><div class="fw-semibold">{{ collection.preferred_time or '—' }}</div></div>
+          <div class="col-12"><small class="text-muted">Address</small><div class="fw-semibold">{{ collection.address or '—' }}</div></div>
+          <div class="col-md-6"><small class="text-muted">Landmark</small><div class="fw-semibold">{{ collection.landmark or '—' }}</div></div>
+          <div class="col-md-6"><small class="text-muted">Phone</small><div class="fw-semibold">{{ collection.phone or '—' }}</div></div>
+          <div class="col-12"><small class="text-muted">Notes</small><div class="fw-semibold">{{ collection.notes or '—' }}</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="section-panel">
+        <p class="eyebrow">USER</p>
+        <h5>{{ user.name if user else 'Unknown User' }}</h5>
+        <p class="text-muted mb-4">{{ user.email if user else '—' }}{% if user and user.phone %} · {{ user.phone }}{% endif %}</p>
+        <p class="eyebrow">UPDATE STATUS</p>
+        <form method="post" action="{{ url_for('admin_collection_status', request_id=collection.id) }}">
+          <select name="status" class="form-select mb-3">
+            {% for s in ['Pending','Confirmed','Assigned','Picked Up','Completed','Cancelled'] %}
+            <option value="{{ s }}" {% if collection.status == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-success w-100"><i class="fa-solid fa-check me-2"></i>Update Collection Status</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
