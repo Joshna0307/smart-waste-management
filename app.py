@@ -71,6 +71,22 @@ def login():
   if u and check_password_hash(u.password_hash,request.form.get("password","")):session["user_id"]=u.id;return redirect(url_for("dashboard"))
   flash("Incorrect email or password.","danger")
  return render_template("login.html")
+@app.route("/admin-login",methods=["GET","POST"])
+def admin_login():
+ if request.method=="POST":
+  email=request.form.get("email","").strip().lower()
+  password=request.form.get("password","")
+  admin_email=os.environ.get("ADMIN_EMAIL","").strip().lower()
+  u=User.query.filter_by(email=email).first()
+  if admin_email and email==admin_email and u and check_password_hash(u.password_hash,password):
+   session.clear()
+   session["user_id"]=u.id
+   session["is_admin"]=True
+   flash("Admin login successful.","success")
+   return redirect(url_for("admin"))
+  flash("Invalid admin credentials or admin account is not configured.","danger")
+ return render_template("admin_login.html")
+
 @app.route("/logout")
 def logout():session.clear();flash("Logged out successfully.","success");return redirect(url_for("index"))
 @app.route("/dashboard")
@@ -226,7 +242,7 @@ def marketplace():
 def admin():
  admin_email=os.environ.get("ADMIN_EMAIL","").strip().lower()
  u=User.query.get(session["user_id"])
- if not admin_email or not u or u.email.lower()!=admin_email: return render_template("error.html",code=403,message="Admin access is not enabled for this account."),403
+ if not session.get("is_admin") or not admin_email or not u or u.email.lower()!=admin_email: return render_template("error.html",code=403,message="Admin access is not enabled for this account."),403
  return render_template("admin.html",users=User.query.count(),records=WasteRecord.query.count(),requests=CollectionRequest.query.count(),reports=WasteReport.query.count(),messages=ContactMessage.query.count(),bins=SmartBin.query.count(),items=MarketplaceItem.query.count(),impact=_impact_summary(session["user_id"]))
 
 @app.get("/api/eco-forecast")
