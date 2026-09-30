@@ -26,7 +26,7 @@
         </div>
       </div>
     </div>
-    <div class="col-lg-5">
+    <div class="col-lg-5">{% if collection.image_path %}<div class="section-panel mb-4"><h5>Collection Evidence</h5><img src="{{ url_for("static", filename=collection.image_path.replace("uploads/","uploads/")) }}" class="img-fluid rounded" alt="Collection evidence"></div>{% endif %}
       <div class="section-panel">
         <p class="eyebrow">USER</p>
         <h5>{{ user.name if user else 'Unknown User' }}</h5>
