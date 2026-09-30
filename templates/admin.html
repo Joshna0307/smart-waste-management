@@ -128,6 +128,39 @@
     {% endif %}
   </div>
 
+  <div class="section-panel completed-panel mb-4" id="completed">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div><p class="eyebrow mb-1">COMPLETED</p><h4 class="mb-1">Completed Collections & Resolved Reports</h4><p class="text-muted mb-0">Finalized requests and resolved community reports, including uploaded evidence.</p></div>
+      <span class="badge text-bg-success">{{ completed_collections|length + completed_reports|length }} completed</span>
+    </div>
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <h6 class="fw-bold">Collections</h6>
+        {% for item in completed_collections %}
+        <div class="tracking-row">
+          <div class="d-flex gap-3 align-items-center">
+            {% if item.image_path %}<img class="completed-thumb" src="{{ url_for('static', filename=item.image_path.replace('uploads/','uploads/')) }}" alt="Collection evidence">{% endif %}
+            <div><b>{{ item.request_id }}</b><span>{{ item.waste_type }} • {{ item.quantity }}</span><small>{{ item.preferred_date }} at {{ item.preferred_time }}</small></div>
+          </div>
+          <a class="btn btn-sm btn-outline-success" href="{{ url_for('admin_collection_view', request_id=item.id) }}">View</a>
+        </div>
+        {% else %}<div class="empty-state">No completed collections yet.</div>{% endfor %}
+      </div>
+      <div class="col-lg-6">
+        <h6 class="fw-bold">Resolved Reports</h6>
+        {% for item in completed_reports %}
+        <div class="tracking-row">
+          <div class="d-flex gap-3 align-items-center">
+            {% if item.image_path %}<img class="completed-thumb" src="{{ url_for('static', filename=item.image_path.replace('uploads/','uploads/')) }}" alt="Report evidence">{% endif %}
+            <div><b>{{ item.report_id }}</b><span>{{ item.issue_type }} • {{ item.location }}</span><small>{{ item.severity }} priority • {{ item.created_at.strftime('%d %b %Y') if item.created_at else '' }}</small></div>
+          </div>
+          <a class="btn btn-sm btn-outline-success" href="{{ url_for('admin_report_view', report_id=item.id) }}">View</a>
+        </div>
+        {% else %}<div class="empty-state">No resolved reports yet.</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+
   <div class="row g-4">
     <div class="col-lg-7">
       <div class="section-panel">
