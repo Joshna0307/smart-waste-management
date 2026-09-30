@@ -378,3 +378,128 @@ body.page-smart-bins .hero-actions .btn{
   .section-panel{border-radius:18px}
   .page-shell>.container:before{display:none}
 }
+
+
+/* ===== Full EcoMind module visual system ===== */
+body[class*="page-"] .hero-mini,
+body[class*="page-"] .hero{
+  background:
+    radial-gradient(circle at 88% 12%,var(--module-glow,rgba(84,230,170,.30)),transparent 27%),
+    radial-gradient(circle at 62% 100%,rgba(59,130,246,.18),transparent 31%),
+    linear-gradient(120deg,#062e24,#087653 48%,#155e75 78%,#294a91);
+}
+body[class*="page-"] .section-panel{
+  position:relative;
+  overflow:hidden;
+}
+body[class*="page-"] .section-panel:before{
+  content:"";
+  position:absolute;
+  width:170px;height:170px;
+  right:-70px;top:-85px;
+  border-radius:50%;
+  background:var(--module-glow,rgba(84,230,170,.09));
+  filter:blur(4px);
+  pointer-events:none;
+}
+body[class*="page-"] .module-heading,
+body[class*="page-"] .section-title{
+  letter-spacing:-.025em;
+}
+body[class*="page-"] .btn{
+  border-radius:13px;
+  font-weight:650;
+}
+body[class*="page-"] .cardx,
+body[class*="page-"] .result,
+body[class*="page-"] .stat,
+body[class*="page-"] .market-card,
+body[class*="page-"] .bin-card{
+  border-radius:20px;
+}
+
+/* Module identities */
+body.page-dashboard{--module-glow:rgba(84,230,170,.34)}
+body.page-ai-identifier{--module-glow:rgba(59,130,246,.34)}
+body.page-classification{--module-glow:rgba(139,92,246,.34)}
+body.page-waste-types{--module-glow:rgba(16,185,129,.32)}
+body.page-pollution{--module-glow:rgba(245,158,11,.32)}
+body.page-recycle{--module-glow:rgba(34,197,94,.34)}
+body.page-collection,
+body.page-collect-report{--module-glow:rgba(14,165,233,.34)}
+body.page-disposal-map{--module-glow:rgba(59,130,246,.34)}
+body.page-smart-bins{--module-glow:rgba(6,182,212,.34)}
+body.page-eco-hub{--module-glow:rgba(139,92,246,.30)}
+body.page-impact{--module-glow:rgba(16,185,129,.34)}
+body.page-eco-simulator{--module-glow:rgba(245,158,11,.32)}
+body.page-marketplace{--module-glow:rgba(236,72,153,.28)}
+body.page-notifications{--module-glow:rgba(99,102,241,.30)}
+body.page-profile{--module-glow:rgba(20,184,166,.32)}
+body.page-contact{--module-glow:rgba(14,165,233,.30)}
+body.page-admin{--module-glow:rgba(239,68,68,.25)}
+body.page-admin-login,
+body.page-login,
+body.page-signup{--module-glow:rgba(99,102,241,.30)}
+
+/* Colorful module accents for icons/headings */
+body.page-ai-identifier .module-icon{background:linear-gradient(135deg,#2563eb,#06b6d4)!important}
+body.page-waste-types .module-icon{background:linear-gradient(135deg,#10b981,#84cc16)!important}
+body.page-pollution .module-icon{background:linear-gradient(135deg,#f59e0b,#ef4444)!important}
+body.page-recycle .module-icon{background:linear-gradient(135deg,#16a34a,#06b6d4)!important}
+body.page-smart-bins .module-icon{background:linear-gradient(135deg,#0891b2,#2563eb)!important}
+body.page-marketplace .module-icon{background:linear-gradient(135deg,#ec4899,#8b5cf6)!important}
+body.page-notifications .module-icon{background:linear-gradient(135deg,#6366f1,#3b82f6)!important}
+
+/* Modern section headers */
+body[class*="page-"] .eyebrow{
+  font-size:.78rem;
+  text-transform:uppercase;
+  letter-spacing:.2em;
+}
+body[class*="page-"] h1,
+body[class*="page-"] h2{
+  font-weight:800;
+}
+body[class*="page-"] .hero-actions .btn{
+  min-height:44px;
+}
+
+/* Dashboard-style stat cards */
+body.page-dashboard .stat,
+body.page-admin .stat{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(145deg,rgba(255,255,255,.94),rgba(235,250,244,.84));
+}
+body.page-dashboard .stat:before,
+body.page-admin .stat:before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(#13a86b,#3b82f6,#8b5cf6);
+}
+
+/* Better tables, forms and action areas across modules */
+body[class*="page-"] .table-responsive,
+body[class*="page-"] form{
+  border-radius:18px;
+}
+body[class*="page-"] .alert{
+  border-radius:14px;
+  border:0;
+  box-shadow:0 8px 24px rgba(20,70,55,.08);
+}
+
+/* Floating module decoration */
+body[class*="page-"] .page-shell:after{
+  content:"";
+  position:fixed;
+  left:-75px;
+  bottom:8vh;
+  width:180px;height:180px;
+  border-radius:50%;
+  border:1px solid var(--module-glow,rgba(84,230,170,.15));
+  box-shadow:0 0 0 24px rgba(255,255,255,.025),0 0 0 48px rgba(255,255,255,.018);
+  pointer-events:none;
+  z-index:-1;
+}
