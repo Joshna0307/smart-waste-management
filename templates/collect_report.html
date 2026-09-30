@@ -19,7 +19,7 @@
     <div class="col-xl-6">
       <div class="section-panel h-auto">
         <div class="module-heading"><div><span class="module-icon">🚛</span><div><h3 class="mb-1">Request Waste Collection</h3><p class="text-muted mb-0">Choose a pickup slot and tell the collection team where to come.</p></div></div></div>
-        <form method="post" class="mt-4">
+        <form method="post" enctype="multipart/form-data" class="mt-4">
           <input type="hidden" name="action" value="collect">
           <div class="row g-3">
             <div class="col-md-6"><label class="form-label">Waste type</label><select class="form-select" name="waste_type" required><option value="">Select type</option>{% for x in ['Organic','Plastic','Paper','Glass','Metal','E-Waste','Other'] %}<option>{{x}}</option>{% endfor %}</select></div>
@@ -29,7 +29,7 @@
             <div class="col-md-6"><label class="form-label">Phone</label><input class="form-control" name="phone" placeholder="Contact number" required></div>
             <div class="col-md-6"><label class="form-label">Preferred date</label><input class="form-control" name="preferred_date" type="date" required></div>
             <div class="col-md-6"><label class="form-label">Preferred time</label><input class="form-control" name="preferred_time" type="time" required></div>
-            <div class="col-12"><textarea class="form-control" name="notes" rows="3" placeholder="Additional collection notes"></textarea></div>
+            <div class="col-12"><textarea class="form-control" name="notes" rows="3" placeholder="Additional collection notes"></textarea></div><div class="col-12"><label class="form-label">Collection photo <span class="text-muted">(optional)</span></label><input class="form-control" name="collection_image" type="file" accept=".png,.jpg,.jpeg,.webp"></div>
           </div>
           <button class="btn btn-success btn-lg mt-3 w-100">Schedule Collection</button>
         </form>
@@ -59,7 +59,7 @@
       <div class="section-panel h-auto">
         <div class="d-flex justify-content-between align-items-center mb-3"><h4 class="mb-0">Collection Tracking</h4><span class="badge text-bg-success">{{requests|length}} requests</span></div>
         {% for r in requests %}
-        <div class="tracking-row"><div><b>{{r.request_id}}</b><span>{{r.waste_type}} • {{r.quantity}}</span><small>{{r.preferred_date}} at {{r.preferred_time}}</small></div><span class="status-pill status-{{r.status|lower}}">{{r.status}}</span></div>
+        <div class="tracking-row"><div class="d-flex gap-3 align-items-center">{% if r.image_path %}<img class="completed-thumb" src="{{ url_for("static", filename=r.image_path.replace("uploads/","uploads/")) }}" alt="Collection evidence">{% endif %}<div><b>{{r.request_id}}</b><span>{{r.waste_type}} • {{r.quantity}}</span><small>{{r.preferred_date}} at {{r.preferred_time}}</small></div></div><span class="status-pill status-{{r.status|lower}}">{{r.status}}</span></div>
         {% else %}<div class="empty-state">No collection requests yet. Create your first pickup above.</div>{% endfor %}
       </div>
     </div>
