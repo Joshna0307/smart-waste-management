@@ -1,1 +1,47 @@
-{% extends 'base.html' %}{% block head %}<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">{% endblock %}{% block content %}<div class="container py-5"><h2>Disposal Center Locator</h2><p>Recycling, e-waste, composting and collection points.</p><div id="map" class="map-box mt-4"></div><div class="row g-3 mt-3">{% for c in centers %}<div class="col-md-6"><div class="cardx"><h5>{{c.name}}</h5><p>{{c.center_type}} • {{c.address}}</p><small>{{c.opening_hours}} • {{c.accepted_waste}}</small></div></div>{% endfor %}</div></div>{% endblock %}{% block scripts %}<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>const cs={{centers|map(attribute='name')|list|tojson}};const data={{centers|map(attribute='latitude')|list|tojson}};const lng={{centers|map(attribute='longitude')|list|tojson}};const map=L.map('map').setView([data[0]||10.76,lng[0]||78.69],13);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);data.forEach((lat,i)=>L.marker([lat,lng[i]]).addTo(map).bindPopup(cs[i]));</script>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Smart Disposal Map • EcoMind{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css">
+{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="hero-mini mb-4">
+    <div><p class="eyebrow">SMART CITY MAP</p><h1 class="h2 mb-2">Disposal Center Locator</h1><p class="mb-0">Find recycling, e-waste, composting and collection points with a modern interactive map.</p></div>
+    <div class="hero-actions"><button id="locateBtn" class="btn btn-light"><i class="fa-solid fa-location-crosshairs me-2"></i>My Location</button></div>
+  </div>
+  <div class="section-panel">
+    <div class="map-toolbar">
+      <button class="btn btn-success btn-sm" id="allCenters"><i class="fa-solid fa-location-dot me-1"></i>All Centers</button>
+      <button class="btn btn-outline-success btn-sm" id="resetMap"><i class="fa-solid fa-rotate-left me-1"></i>Reset View</button>
+      <span class="text-muted small align-self-center">Search the map using the control at the top-left.</span>
+    </div>
+    <div id="map" class="map-box"></div>
+  </div>
+  <div class="row g-3 mt-3">{% for c in centers %}<div class="col-md-6 col-lg-4"><div class="cardx"><h5>{{c.name}}</h5><p>{{c.center_type}} • {{c.address}}</p><small>{{c.opening_hours}} • {{c.accepted_waste}}</small></div></div>{% else %}<div class="col-12"><div class="empty-state"><i class="fa-solid fa-map-location-dot fa-2x mb-2"></i><h5>No disposal centers configured yet</h5><p class="mb-0">The map is ready for real recycling and collection center coordinates.</p></div></div>{% endfor %}</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script>
+const centers={{centers|map(attribute='name')|list|tojson}};
+const lats={{centers|map(attribute='latitude')|list|tojson}};
+const lngs={{centers|map(attribute='longitude')|list|tojson}};
+const addresses={{centers|map(attribute='address')|list|tojson}};
+const types={{centers|map(attribute='center_type')|list|tojson}};
+const map=L.map('map',{zoomControl:true,scrollWheelZoom:true}).setView([20.5937,78.9629],5);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:20,attribution:'© OpenStreetMap © CARTO'}).addTo(map);
+L.Control.geocoder({defaultMarkGeocode:true,placeholder:'Search city or place...'}).addTo(map);
+const bounds=[];
+const markerIcon=L.divIcon({className:'modern-map-marker',iconSize:[22,22],iconAnchor:[11,11]});
+function addCenter(i){if(lats[i]==null||lngs[i]==null)return;const m=L.marker([lats[i],lngs[i]],{icon:markerIcon}).addTo(map);m.bindPopup('<b>'+centers[i]+'</b><br>'+types[i]+'<br>'+addresses[i]);bounds.push([lats[i],lngs[i]]);}
+for(let i=0;i<lats.length;i++)addCenter(i);
+if(bounds.length)map.fitBounds(bounds,{padding:[30,30]});
+document.getElementById('allCenters').onclick=()=>bounds.length&&map.fitBounds(bounds,{padding:[30,30]});
+document.getElementById('resetMap').onclick=()=>map.setView([20.5937,78.9629],5);
+document.getElementById('locateBtn').onclick=()=>map.locate({setView:true,maxZoom:15});
+map.on('locationfound',e=>L.circle(e.latlng,{radius:e.accuracy/2,color:'#18a558'}).addTo(map).bindPopup('Your approximate location').openPopup());
+map.on('locationerror',()=>alert('Location permission was not available. You can still search the map.'));
+</script>
+{% endblock %}
