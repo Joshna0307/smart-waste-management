@@ -61,3 +61,45 @@ input:focus,select:focus,textarea:focus{border-color:#18a558!important;box-shado
 .navbar:after{content:"";position:absolute;left:-30%;bottom:0;width:60%;height:1px;background:linear-gradient(90deg,transparent,#4fe49a,transparent);animation:navSweep 5s linear infinite}
 @keyframes navSweep{to{left:100%}}
 @media(prefers-reduced-motion:reduce){.hero:before,.hero:after,.auth:before,.auth:after,.navbar:after{animation:none!important}}
+
+
+/* ===== EcoMind modern motion pack v2 ===== */
+:root{--motion-ease:cubic-bezier(.2,.75,.25,1)}
+@keyframes backgroundDrift{0%,100%{background-position:0% 0%,100% 100%,0 0}50%{background-position:8% 12%,92% 82%,0 0}}
+@keyframes softEntrance{from{opacity:0;transform:translateY(22px) scale(.985);filter:blur(3px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+@keyframes borderShine{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes iconBob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(2deg)}}
+@keyframes ringPulse{0%{transform:scale(.94);opacity:.65}100%{transform:scale(1.14);opacity:0}}
+body{background-size:140% 140%,140% 140%,auto;animation:backgroundDrift 22s ease-in-out infinite}
+.page-shell>.container>*{animation:softEntrance .6s var(--motion-ease) both}
+.page-shell>.container>*:nth-child(2){animation-delay:.06s}
+.page-shell>.container>*:nth-child(3){animation-delay:.12s}
+.page-shell>.container>*:nth-child(4){animation-delay:.18s}
+.page-shell>.container>*:nth-child(5){animation-delay:.24s}
+.cardx,.stat,.result,.section-panel,.market-card,.bin-card,.impact-card{transform:translateZ(0);will-change:transform}
+.cardx,.market-card,.bin-card{position:relative;overflow:hidden}
+.cardx:after,.market-card:after,.bin-card:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.55) 45%,transparent 70%);background-size:220% 100%;transition:opacity .25s ease}
+.cardx:hover:after,.market-card:hover:after,.bin-card:hover:after{opacity:1;animation:borderShine 1.1s ease}
+.module-icon{transition:transform .25s var(--motion-ease),box-shadow .25s ease}
+.module-heading:hover .module-icon{transform:translateY(-4px) rotate(-4deg);box-shadow:0 8px 20px rgba(24,165,88,.16)}
+.navbar .nav-link{position:relative;transition:color .2s ease,opacity .2s ease}
+.navbar .nav-link:after{content:"";position:absolute;left:50%;right:50%;bottom:3px;height:2px;border-radius:2px;background:#68e7a7;transition:left .22s ease,right .22s ease}
+.navbar .nav-link:hover:after,.navbar .nav-link:focus-visible:after{left:10%;right:10%}
+.btn,.chat-fab{transform:translateZ(0);transition:transform .22s var(--motion-ease),box-shadow .22s ease,filter .22s ease}
+.btn:active,button:active{transform:scale(.97)}
+.btn-success:hover{filter:saturate(1.12)}
+input,select,textarea{transition:border-color .2s ease,box-shadow .2s ease,background-color .2s ease}
+input:focus,select:focus,textarea:focus{background-color:#fff}
+.table tbody tr{transition:background-color .18s ease,transform .18s ease}
+.table tbody tr:hover{background-color:#effaf3;transform:translateX(2px)}
+img:not(.navbar img){transition:transform .35s ease,filter .35s ease}
+img:not(.navbar img):hover{filter:saturate(1.06)}
+.progress-bar{background-image:linear-gradient(90deg,#18a558,#62dfa0,#18a558);background-size:200% 100%;animation:borderShine 4s linear infinite}
+.empty-state{animation:softEntrance .5s ease both}
+.status-pill{position:relative}
+.status-pill:hover:after{content:"";position:absolute;inset:-4px;border:1px solid currentColor;border-radius:999px;animation:ringPulse .65s ease-out}
+.auth .section-panel{backdrop-filter:blur(18px)}
+.auth-logo{position:relative}
+.auth-logo:after{content:"";position:absolute;inset:-7px;border:1px solid rgba(24,165,88,.24);border-radius:25px;animation:ringPulse 2.8s ease-out infinite}
+@media(max-width:700px){body{animation-duration:30s}.page-shell>.container>*{animation-duration:.45s}.cardx:hover,.stat:hover,.result:hover,.section-panel:hover,.market-card:hover,.bin-card:hover{transform:translateY(-2px)}}
+@media(prefers-reduced-motion:reduce){body,.page-shell>.container>*,.cardx:after,.market-card:after,.bin-card:after,.progress-bar,.auth-logo:after{animation:none!important}*{scroll-behavior:auto!important}}
