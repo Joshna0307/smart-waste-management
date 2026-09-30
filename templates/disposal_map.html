@@ -31,11 +31,26 @@ const lngs={{centers|map(attribute='longitude')|list|tojson}};
 const addresses={{centers|map(attribute='address')|list|tojson}};
 const types={{centers|map(attribute='center_type')|list|tojson}};
 const map=L.map('map',{zoomControl:true,scrollWheelZoom:true}).setView([20.5937,78.9629],5);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:20,attribution:'© OpenStreetMap © CARTO'}).addTo(map);
-L.Control.geocoder({defaultMarkGeocode:true,placeholder:'Search city or place...'}).addTo(map);
+
+// OpenStreetMap tiles do not require a CARTO API key.
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  maxZoom:19,
+  attribution:'&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+L.Control.geocoder({
+  defaultMarkGeocode:true,
+  placeholder:'Search city or place...'
+}).addTo(map);
+
 const bounds=[];
 const markerIcon=L.divIcon({className:'modern-map-marker',iconSize:[22,22],iconAnchor:[11,11]});
-function addCenter(i){if(lats[i]==null||lngs[i]==null)return;const m=L.marker([lats[i],lngs[i]],{icon:markerIcon}).addTo(map);m.bindPopup('<b>'+centers[i]+'</b><br>'+types[i]+'<br>'+addresses[i]);bounds.push([lats[i],lngs[i]]);}
+function addCenter(i){
+  if(lats[i]==null||lngs[i]==null)return;
+  const m=L.marker([lats[i],lngs[i]],{icon:markerIcon}).addTo(map);
+  m.bindPopup('<b>'+centers[i]+'</b><br>'+types[i]+'<br>'+addresses[i]);
+  bounds.push([lats[i],lngs[i]]);
+}
 for(let i=0;i<lats.length;i++)addCenter(i);
 if(bounds.length)map.fitBounds(bounds,{padding:[30,30]});
 document.getElementById('allCenters').onclick=()=>bounds.length&&map.fitBounds(bounds,{padding:[30,30]});
