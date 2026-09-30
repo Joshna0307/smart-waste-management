@@ -112,3 +112,14 @@ body:before{z-index:-1;opacity:.55;}
 .page-shell{position:relative;}
 .page-shell:before{content:"♻";position:fixed;right:4vw;top:18vh;font-size:clamp(70px,10vw,150px);font-weight:900;color:rgba(24,165,88,.035);pointer-events:none;z-index:-1;animation:ecoFloat 9s ease-in-out infinite;}
 @keyframes ecoFloat{0%,100%{transform:translate3d(0,0,0) rotate(-5deg)}50%{transform:translate3d(-18px,24px,0) rotate(8deg)}}
+
+/* ===== Navbar active overlay + click navigation ===== */
+.eco-navbar .nav-link{position:relative;display:inline-flex;align-items:center;padding:.55rem .72rem!important;border-radius:10px;color:rgba(255,255,255,.82)!important;transition:color .2s ease,background .2s ease,transform .2s ease,box-shadow .2s ease}
+.eco-navbar .nav-link:before{content:"";position:absolute;inset:2px;background:linear-gradient(135deg,rgba(24,165,88,.9),rgba(72,231,167,.35));border-radius:9px;transform:scaleX(0);transform-origin:center;opacity:0;transition:transform .25s ease,opacity .25s ease;z-index:-1}
+.eco-navbar .nav-link:hover,.eco-navbar .nav-link:focus-visible,.eco-navbar .nav-link.active{color:#fff!important;transform:translateY(-1px);text-shadow:0 1px 10px rgba(104,231,167,.25)}
+.eco-navbar .nav-link:hover:before,.eco-navbar .nav-link:focus-visible:before,.eco-navbar .nav-link.active:before{transform:scaleX(1);opacity:1}
+.eco-navbar .nav-link.active{box-shadow:0 5px 18px rgba(24,165,88,.22)}
+.eco-navbar .nav-link:after{content:"";position:absolute;left:18%;right:18%;bottom:3px;height:2px;border-radius:99px;background:#8affc0;transform:scaleX(0);transition:transform .22s ease}
+.eco-navbar .nav-link:hover:after,.eco-navbar .nav-link:focus-visible:after,.eco-navbar .nav-link.active:after{transform:scaleX(1)}
+.eco-navbar .btn{position:relative;z-index:1}
+@media(max-width:991px){.eco-navbar .nav-link{margin:3px 0}.eco-navbar .nav-link:before{inset:0}.eco-navbar .nav-link.active{background:rgba(24,165,88,.18)}}
