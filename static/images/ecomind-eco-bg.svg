@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" fill="none">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b3d2b"/><stop offset="1" stop-color="#123f31"/></linearGradient>
+ <filter id="blur"><feGaussianBlur stdDeviation="2"/></filter>
+</defs>
+<rect width="1600" height="900" fill="url(#bg)"/>
+<g opacity=".16" stroke="#75e6ad" stroke-width="5">
+ <path d="M120 190c90-130 250-130 330-20-100-30-180 10-205 95 0 0-75 10-125-75Z"/>
+ <path d="M1370 670c-90 130-250 130-330 20 100 30 180-10 205-95 0 0 75-10 125 75Z"/>
+ <path d="M690 170c100-90 220-55 245 45-75-35-135-5-165 65-50-5-85-45-80-110Z"/>
+</g>
+<g opacity=".11" fill="#9af0c4">
+ <circle cx="220" cy="690" r="105"/><circle cx="1390" cy="210" r="125"/><circle cx="810" cy="470" r="170"/>
+</g>
+<g opacity=".13" stroke="#b8f6d4" stroke-width="9">
+ <path d="M430 420h105l-18 250H448L430 420Z"/><path d="M440 420h85M455 395h55v25h-55z"/>
+ <path d="M1110 420h105l-18 250h-69l-18-250Z"/><path d="M1120 420h85M1135 395h55v25h-55z"/>
+ <path d="M760 610c-30-75 20-135 75-135s105 60 75 135c-35 45-115 45-150 0Z"/>
+</g>
+<g opacity=".12" stroke="#75e6ad" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+ <path d="M250 340l80-65 80 65-30 105H280L250 340Z"/>
+ <path d="M1250 330l80-65 80 65-30 105h-100l-30-105Z"/>
+ <path d="M690 760l55-65 75 30-20 90-85 10-25-65Z"/>
+</g>
+<g opacity=".12" fill="#d8ffe8" font-family="Arial,sans-serif" font-weight="700">
+ <text x="85" y="820" font-size="32">REDUCE • REUSE • RECYCLE</text>
+ <text x="1030" y="105" font-size="26">SMART • CLEAN • CIRCULAR</text>
+</g>
+</svg>
