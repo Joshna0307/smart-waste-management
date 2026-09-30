@@ -134,12 +134,14 @@ def recycle():return render_template("recycle.html")
 @login_required
 def collection():
  if request.method=="POST":
-  rid=f"SWM-{datetime.datetime.now().year}-{CollectionRequest.query.count()+1:04d}";f=request.files.get("collection_image");image_path=None
-   if f and f.filename:
-    ext=f.filename.rsplit(".",1)[-1].lower() if "." in f.filename else ""
-    if ext in app.config["ALLOWED_EXTENSIONS"]:
-     fn=secure_filename(uuid.uuid4().hex+"."+ext);f.save(os.path.join(app.config["UPLOAD_FOLDER"],fn));image_path="uploads/"+fn
-   c=CollectionRequest(user_id=session["user_id"],request_id=rid,waste_type=request.form.get("waste_type"),quantity=request.form.get("quantity"),address=request.form.get("address"),landmark=request.form.get("landmark"),preferred_date=request.form.get("preferred_date"),preferred_time=request.form.get("preferred_time"),phone=request.form.get("phone"),notes=request.form.get("notes"),image_path=image_path);db.session.add(c);db.session.add(Notification(user_id=session["user_id"],title="Collection request created",message=f"Request {rid} is pending.",category="Collection"));db.session.commit();flash(f"Collection request {rid} created.","success");return redirect(url_for("collection"))
+  rid=f"SWM-{datetime.datetime.now().year}-{CollectionRequest.query.count()+1:04d}"
+  f=request.files.get("collection_image");image_path=None
+  if f and f.filename:
+   ext=f.filename.rsplit(".",1)[-1].lower() if "." in f.filename else ""
+   if ext in app.config["ALLOWED_EXTENSIONS"]:
+    fn=secure_filename(uuid.uuid4().hex+"."+ext);f.save(os.path.join(app.config["UPLOAD_FOLDER"],fn));image_path="uploads/"+fn
+  c=CollectionRequest(user_id=session["user_id"],request_id=rid,waste_type=request.form.get("waste_type"),quantity=request.form.get("quantity"),address=request.form.get("address"),landmark=request.form.get("landmark"),preferred_date=request.form.get("preferred_date"),preferred_time=request.form.get("preferred_time"),phone=request.form.get("phone"),notes=request.form.get("notes"),image_path=image_path)
+  db.session.add(c);db.session.add(Notification(user_id=session["user_id"],title="Collection request created",message=f"Request {rid} is pending.",category="Collection"));db.session.commit();flash(f"Collection request {rid} created.","success");return redirect(url_for("collection"))
  return render_template("collection.html",requests=CollectionRequest.query.filter_by(user_id=session["user_id"]).order_by(CollectionRequest.created_at.desc()).all())
 @app.route("/collect-report",methods=["GET","POST"])
 @login_required
