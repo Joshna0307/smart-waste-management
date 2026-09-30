@@ -21,7 +21,7 @@ class User(db.Model):
 class WasteRecord(db.Model):
  id=db.Column(db.Integer,primary_key=True);user_id=db.Column(db.Integer,db.ForeignKey("users.id"),nullable=False);waste_name=db.Column(db.String(120));waste_category=db.Column(db.String(60));confidence=db.Column(db.Float);recyclable=db.Column(db.Boolean);reusable=db.Column(db.Boolean);disposal_method=db.Column(db.String(255));image_path=db.Column(db.String(255));created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
 class CollectionRequest(db.Model):
- id=db.Column(db.Integer,primary_key=True);user_id=db.Column(db.Integer,db.ForeignKey("users.id"),nullable=False);request_id=db.Column(db.String(30),unique=True);waste_type=db.Column(db.String(60));quantity=db.Column(db.String(60));address=db.Column(db.Text);landmark=db.Column(db.String(160));preferred_date=db.Column(db.String(30));preferred_time=db.Column(db.String(30));phone=db.Column(db.String(30));notes=db.Column(db.Text);status=db.Column(db.String(30),default="Pending");created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
+ id=db.Column(db.Integer,primary_key=True);user_id=db.Column(db.Integer,db.ForeignKey("users.id"),nullable=False);request_id=db.Column(db.String(30),unique=True);waste_type=db.Column(db.String(60));quantity=db.Column(db.String(60));address=db.Column(db.Text);landmark=db.Column(db.String(160));preferred_date=db.Column(db.String(30));preferred_time=db.Column(db.String(30));phone=db.Column(db.String(30));notes=db.Column(db.Text);image_path=db.Column(db.String(255));status=db.Column(db.String(30),default="Pending");created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
 class WasteReport(db.Model):
  __tablename__="waste_reports"
  id=db.Column(db.Integer,primary_key=True);user_id=db.Column(db.Integer,db.ForeignKey("users.id"),nullable=False);report_id=db.Column(db.String(30),unique=True);issue_type=db.Column(db.String(80));location=db.Column(db.String(255));description=db.Column(db.Text);severity=db.Column(db.String(30),default="Medium");image_path=db.Column(db.String(255));status=db.Column(db.String(30),default="Open");created_at=db.Column(db.DateTime,default=datetime.datetime.utcnow)
@@ -134,7 +134,12 @@ def recycle():return render_template("recycle.html")
 @login_required
 def collection():
  if request.method=="POST":
-  rid=f"SWM-{datetime.datetime.now().year}-{CollectionRequest.query.count()+1:04d}";c=CollectionRequest(user_id=session["user_id"],request_id=rid,waste_type=request.form.get("waste_type"),quantity=request.form.get("quantity"),address=request.form.get("address"),landmark=request.form.get("landmark"),preferred_date=request.form.get("preferred_date"),preferred_time=request.form.get("preferred_time"),phone=request.form.get("phone"),notes=request.form.get("notes"));db.session.add(c);db.session.add(Notification(user_id=session["user_id"],title="Collection request created",message=f"Request {rid} is pending.",category="Collection"));db.session.commit();flash(f"Collection request {rid} created.","success");return redirect(url_for("collection"))
+  rid=f"SWM-{datetime.datetime.now().year}-{CollectionRequest.query.count()+1:04d}";f=request.files.get("collection_image");image_path=None
+   if f and f.filename:
+    ext=f.filename.rsplit(".",1)[-1].lower() if "." in f.filename else ""
+    if ext in app.config["ALLOWED_EXTENSIONS"]:
+     fn=secure_filename(uuid.uuid4().hex+"."+ext);f.save(os.path.join(app.config["UPLOAD_FOLDER"],fn));image_path="uploads/"+fn
+   c=CollectionRequest(user_id=session["user_id"],request_id=rid,waste_type=request.form.get("waste_type"),quantity=request.form.get("quantity"),address=request.form.get("address"),landmark=request.form.get("landmark"),preferred_date=request.form.get("preferred_date"),preferred_time=request.form.get("preferred_time"),phone=request.form.get("phone"),notes=request.form.get("notes"),image_path=image_path);db.session.add(c);db.session.add(Notification(user_id=session["user_id"],title="Collection request created",message=f"Request {rid} is pending.",category="Collection"));db.session.commit();flash(f"Collection request {rid} created.","success");return redirect(url_for("collection"))
  return render_template("collection.html",requests=CollectionRequest.query.filter_by(user_id=session["user_id"]).order_by(CollectionRequest.created_at.desc()).all())
 @app.route("/collect-report",methods=["GET","POST"])
 @login_required
@@ -143,7 +148,12 @@ def collect_report():
   action=request.form.get("action","").strip()
   if action=="collect":
    rid=f"SWM-{datetime.datetime.now().year}-{CollectionRequest.query.count()+1:04d}"
-   c=CollectionRequest(user_id=session["user_id"],request_id=rid,waste_type=request.form.get("waste_type"),quantity=request.form.get("quantity"),address=request.form.get("address"),landmark=request.form.get("landmark"),preferred_date=request.form.get("preferred_date"),preferred_time=request.form.get("preferred_time"),phone=request.form.get("phone"),notes=request.form.get("notes"))
+   f=request.files.get("collection_image");image_path=None
+   if f and f.filename:
+    ext=f.filename.rsplit(".",1)[-1].lower() if "." in f.filename else ""
+    if ext in app.config["ALLOWED_EXTENSIONS"]:
+     fn=secure_filename(uuid.uuid4().hex+"."+ext);f.save(os.path.join(app.config["UPLOAD_FOLDER"],fn));image_path="uploads/"+fn
+   c=CollectionRequest(user_id=session["user_id"],request_id=rid,waste_type=request.form.get("waste_type"),quantity=request.form.get("quantity"),address=request.form.get("address"),landmark=request.form.get("landmark"),preferred_date=request.form.get("preferred_date"),preferred_time=request.form.get("preferred_time"),phone=request.form.get("phone"),notes=request.form.get("notes"),image_path=image_path)
    db.session.add(c);db.session.add(Notification(user_id=session["user_id"],title="Collection request created",message=f"Request {rid} is pending.",category="Collection"));db.session.commit();flash(f"Collection request {rid} created.","success");return redirect(url_for("collect_report"))
   if action=="report":
    f=request.files.get("report_image");image_path=None
@@ -303,7 +313,7 @@ def admin_report_status(report_id):
 @app.route("/admin")
 @admin_required
 def admin():
- return render_template("admin.html",users=User.query.count(),records=WasteRecord.query.count(),requests=CollectionRequest.query.count(),reports=WasteReport.query.count(),messages=ContactMessage.query.count(),bins=SmartBin.query.count(),items=MarketplaceItem.query.count(),impact=_impact_summary(None),report_rows=WasteReport.query.order_by(WasteReport.created_at.desc()).all(),collection_rows=CollectionRequest.query.order_by(CollectionRequest.created_at.desc()).all())
+ return render_template("admin.html",users=User.query.count(),records=WasteRecord.query.count(),requests=CollectionRequest.query.count(),reports=WasteReport.query.count(),messages=ContactMessage.query.count(),bins=SmartBin.query.count(),items=MarketplaceItem.query.count(),impact=_impact_summary(None),report_rows=WasteReport.query.order_by(WasteReport.created_at.desc()).all(),collection_rows=CollectionRequest.query.order_by(CollectionRequest.created_at.desc()).all(),completed_collections=CollectionRequest.query.filter_by(status="Completed").order_by(CollectionRequest.created_at.desc()).all(),completed_reports=WasteReport.query.filter_by(status="Resolved").order_by(WasteReport.created_at.desc()).all())
 
 @app.get("/api/eco-forecast")
 @login_required
@@ -315,6 +325,12 @@ def not_found(e):return render_template("error.html",code=404,message="Page not 
 def server_error(e):db.session.rollback();return render_template("error.html",code=500,message="Something went wrong"),500
 with app.app_context():
  db.create_all()
+ try:
+  if db.engine.dialect.name == "postgresql": db.session.execute(text("ALTER TABLE collection_request ADD COLUMN IF NOT EXISTS image_path VARCHAR(255)"))
+  else: db.session.execute(text("ALTER TABLE collection_request ADD COLUMN image_path VARCHAR(255)"))
+  db.session.commit()
+ except Exception:
+  db.session.rollback()
  # Ensure the one-time reset marker exists even when the deployment is
  # connecting to a pre-existing Neon database whose schema predates this model.
  reset_database = os.environ.get("RESET_DATABASE_ON_STARTUP", "true").strip().lower() == "true"
