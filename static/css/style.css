@@ -103,3 +103,12 @@ img:not(.navbar img):hover{filter:saturate(1.06)}
 .auth-logo:after{content:"";position:absolute;inset:-7px;border:1px solid rgba(24,165,88,.24);border-radius:25px;animation:ringPulse 2.8s ease-out infinite}
 @media(max-width:700px){body{animation-duration:30s}.page-shell>.container>*{animation-duration:.45s}.cardx:hover,.stat:hover,.result:hover,.section-panel:hover,.market-card:hover,.bin-card:hover{transform:translateY(-2px)}}
 @media(prefers-reduced-motion:reduce){body,.page-shell>.container>*,.cardx:after,.market-card:after,.bin-card:after,.progress-bar,.auth-logo:after{animation:none!important}*{scroll-behavior:auto!important}}
+
+/* ===== EcoMind project visual background ===== */
+body:after{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background-image:linear-gradient(rgba(244,248,246,.93),rgba(244,248,246,.93)),url("../images/ecomind-eco-bg.svg");background-size:auto,cover;background-position:center;background-attachment:fixed;background-repeat:no-repeat;opacity:.72;}
+body:before{z-index:-1;opacity:.55;}
+.hero:before,.hero-mini:before{background:rgba(72,231,167,.13);}
+.hero:after,.hero-mini:after{border-color:rgba(120,239,181,.16);}
+.page-shell{position:relative;}
+.page-shell:before{content:"♻";position:fixed;right:4vw;top:18vh;font-size:clamp(70px,10vw,150px);font-weight:900;color:rgba(24,165,88,.035);pointer-events:none;z-index:-1;animation:ecoFloat 9s ease-in-out infinite;}
+@keyframes ecoFloat{0%,100%{transform:translate3d(0,0,0) rotate(-5deg)}50%{transform:translate3d(-18px,24px,0) rotate(8deg)}}
