@@ -575,3 +575,33 @@ body{margin:0!important;background:#edf7f2!important}
 .boy-doing-action .picker-boy-caption{color:#86ffc4;font-weight:800}
 @media(max-width:760px){.cartoon-boy{width:130px;height:108px}}
 @media(prefers-reduced-motion:reduce){.cartoon-boy,.boy-doing-action .boy-body,.boy-doing-action .boy-arm-left,.boy-doing-action .boy-arm-right,.boy-doing-action .boy-paper,.boy-doing-action .bin-lid-art{animation-duration:.01ms!important}}
+
+
+/* ===== Stronger, more visible Eco-boy navigation panel ===== */
+.eco-picker{padding:20px 16px 16px!important;background:
+ radial-gradient(ellipse at 50% 18%,rgba(67,245,177,.22),transparent 38%),
+ radial-gradient(circle at 0% 70%,rgba(69,147,255,.16),transparent 30%),
+ linear-gradient(160deg,#041e18 0%,#073c30 52%,#102e4a 100%)!important}
+.picker-brand{padding-bottom:16px!important}
+.picker-logo{width:46px!important;height:46px!important;font-size:28px!important;box-shadow:0 0 0 5px rgba(80,255,183,.08),0 10px 28px rgba(45,224,154,.25)!important}
+.picker-boy-stage{height:178px!important;margin:14px 0 10px!important;border:1px solid rgba(140,255,207,.20);background:
+ radial-gradient(ellipse at 50% 85%,rgba(64,231,165,.20),transparent 48%),
+ linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.015))!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 26px rgba(0,0,0,.12)}
+.cartoon-boy{width:196px!important;height:154px!important;filter:drop-shadow(0 9px 8px rgba(0,0,0,.24))!important}
+.picker-boy-caption{font-size:.78rem!important;font-weight:800;letter-spacing:.045em;color:#c7ffe5!important}
+.paper-instructions{padding:9px 10px!important;border-radius:11px;background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.08);line-height:1.45}
+.paper-instructions i{color:#71f5b9}
+.paper-stack{gap:10px!important;padding-top:5px!important}
+.paper-chit{min-height:62px!important;padding:10px 9px!important;font-size:.77rem!important;border-radius:8px 13px 8px 12px!important;box-shadow:0 7px 13px rgba(0,0,0,.20)!important}
+.paper-chit span{font-size:20px!important}
+.paper-chit:hover,.paper-chit:focus-visible{box-shadow:0 0 0 2px #7bffc5,0 12px 22px rgba(0,0,0,.25)!important}
+.bin-dropzone{min-height:132px!important;margin-top:9px!important;border:2px dashed rgba(123,255,197,.58)!important;background:linear-gradient(145deg,rgba(31,220,146,.16),rgba(63,147,255,.15))!important}
+.dustbin-icon{font-size:43px!important;animation:binIdleBounce 2.6s ease-in-out infinite}
+.bin-dropzone strong{font-size:.78rem!important;color:#d6ffec!important}
+.bin-dropzone small{font-size:.72rem!important;color:#b2ddcb!important}
+@keyframes binIdleBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.boy-doing-action .cartoon-boy{filter:drop-shadow(0 0 12px rgba(86,255,182,.32))!important}
+.boy-doing-action .picker-boy-caption{animation:captionPop .35s ease both}
+@keyframes captionPop{from{transform:scale(.9);opacity:.65}to{transform:scale(1);opacity:1}}
+@media(max-width:760px){.picker-boy-stage{height:145px!important}.cartoon-boy{width:166px!important;height:130px!important}.bin-dropzone{min-height:100px!important}}
