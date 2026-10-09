@@ -11,7 +11,22 @@
 <div class="eco-workspace">
   <aside class="eco-picker" aria-label="Paper chit page navigation">
     <div class="picker-brand"><span class="picker-logo">♻</span><div><strong>EcoMind</strong><small>Pick a page · Drop it in</small></div></div>
-    <div class="picker-boy-stage" aria-hidden="true"><div class="picker-spark spark-one">✦</div><div class="picker-boy">👦🏻</div><div class="picker-boy-caption">Hey! Choose your next stop</div></div>
+    <div class="picker-boy-stage" id="boyStage" aria-hidden="true">
+      <div class="picker-spark spark-one">✦</div>
+      <svg class="cartoon-boy" viewBox="0 0 180 150" role="img" aria-label="Cartoon boy picking up paper and putting it in a recycling bin">
+        <ellipse cx="80" cy="139" rx="54" ry="7" fill="#001d16" opacity=".22"/>
+        <g class="boy-body">
+          <g class="boy-legs"><path d="M67 94 L61 121 L50 132" fill="none" stroke="#244d9b" stroke-width="13" stroke-linecap="round"/><path d="M89 94 L98 119 L115 129" fill="none" stroke="#244d9b" stroke-width="13" stroke-linecap="round"/><path d="M48 132 Q39 135 43 141 L65 141 Q70 136 59 131" fill="#f7f8fa"/><path d="M111 128 Q108 135 116 139 L136 139 Q140 134 128 129" fill="#f7f8fa"/></g>
+          <path class="boy-shirt" d="M57 52 Q76 43 96 53 L104 91 Q82 102 57 91 Z" fill="#18b879" stroke="#d2ffeb" stroke-width="2"/>
+          <path d="M74 62 l7 7 7-7 M81 69 v10" fill="none" stroke="#effff7" stroke-width="2.5" stroke-linecap="round"/>
+          <g class="boy-arms"><path class="boy-arm-left" d="M60 59 Q45 68 48 86 L61 103" fill="none" stroke="#c98255" stroke-width="10" stroke-linecap="round"/><path class="boy-arm-right" d="M96 59 Q112 67 109 81 L103 91" fill="none" stroke="#c98255" stroke-width="10" stroke-linecap="round"/></g>
+          <g class="boy-head"><path d="M59 32 Q56 9 79 8 Q103 9 101 34 L97 48 Q81 63 64 47 Z" fill="#c98255"/><path d="M57 31 Q49 11 70 5 Q94 -1 104 18 L101 31 Q89 18 77 20 Q67 21 57 31" fill="#24332f"/><path d="M66 35 q5 -4 9 0 M84 35 q5 -4 9 0" stroke="#26342f" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M73 44 Q81 50 89 43" fill="none" stroke="#7e382c" stroke-width="2.5" stroke-linecap="round"/></g>
+        </g>
+        <g class="boy-paper"><path d="M26 100 l16 -3 4 18 -16 3z" fill="#fffdf1" stroke="#a7c8b9" stroke-width="1.5"/><path d="M30 103 l9 -2 M31 108 l9 -2" stroke="#80bda4" stroke-width="1.5"/></g>
+        <g class="boy-bin"><path d="M119 83 L151 83 L147 132 Q135 139 123 132 Z" fill="#159f70" stroke="#9af2c7" stroke-width="2"/><path d="M116 78 L154 78 L154 84 L116 84 Z" fill="#69e4ae"/><path class="bin-lid-art" d="M115 75 L155 75" stroke="#c4ffe4" stroke-width="5" stroke-linecap="round"/><path d="M129 91 L130 123 M140 91 L140 123" stroke="#a2f3ce" stroke-width="2" opacity=".8"/><path d="M133 70 l5 -5 5 5" fill="none" stroke="#83f0bb" stroke-width="2.5" stroke-linecap="round"/></g>
+      </svg>
+      <div class="picker-boy-caption">Pick a paper · Feed the bin</div>
+    </div>
     <div class="paper-instructions"><i class="fa-solid fa-hand-pointer"></i> Drag a paper into the bin or tap it</div>
     <div class="paper-stack" id="paperStack">
       <a class="paper-chit paper-mint" draggable="true" data-url="{{url_for('index')}}" href="{{url_for('index')}}"><span>🏡</span> Home</a>
@@ -47,16 +62,16 @@
 (()=> {
  const stack=document.getElementById('paperStack'), bin=document.getElementById('binDropzone');
  if(!stack||!bin)return;
- let selectedUrl='';
+ let selectedUrl='';\n const boyStage=document.getElementById('boyStage');\n function animateDrop(url, chit){selectedUrl=url;if(chit)chit.classList.add('paper-picked');bin.classList.add('bin-ready');if(boyStage)boyStage.classList.add('boy-doing-action');setTimeout(()=>{window.location.href=url;},1250);}
  stack.querySelectorAll('.paper-chit').forEach(chit=>{
    chit.addEventListener('dragstart',e=>{selectedUrl=chit.dataset.url||chit.href;chit.classList.add('is-dragging');e.dataTransfer.setData('text/plain',selectedUrl);e.dataTransfer.effectAllowed='move';});
    chit.addEventListener('dragend',()=>chit.classList.remove('is-dragging'));
-   chit.addEventListener('click',e=>{if(e.ctrlKey||e.metaKey)return;e.preventDefault();selectedUrl=chit.dataset.url||chit.href;chit.classList.add('paper-picked');bin.classList.add('bin-ready');setTimeout(()=>{window.location.href=selectedUrl;},280);});
+   chit.addEventListener('click',e=>{if(e.ctrlKey||e.metaKey)return;e.preventDefault();selectedUrl=chit.dataset.url||chit.href;animateDrop(selectedUrl,chit);});
  });
  bin.addEventListener('dragover',e=>{e.preventDefault();bin.classList.add('bin-hover');e.dataTransfer.dropEffect='move';});
  bin.addEventListener('dragleave',()=>bin.classList.remove('bin-hover'));
- bin.addEventListener('drop',e=>{e.preventDefault();bin.classList.remove('bin-hover');const url=e.dataTransfer.getData('text/plain')||selectedUrl;if(url){bin.classList.add('bin-ready');setTimeout(()=>{window.location.href=url;},420);}});
- bin.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&selectedUrl){e.preventDefault();window.location.href=selectedUrl;}});
+ bin.addEventListener('drop',e=>{e.preventDefault();bin.classList.remove('bin-hover');const url=e.dataTransfer.getData('text/plain')||selectedUrl;if(url){animateDrop(url,stack.querySelector('.is-dragging'));}});
+ bin.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&selectedUrl){e.preventDefault();animateDrop(selectedUrl,null);}});
 })();
 </script>
 {% block scripts %}{% endblock %}
