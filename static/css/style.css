@@ -605,3 +605,75 @@ body{margin:0!important;background:#edf7f2!important}
 .boy-doing-action .picker-boy-caption{animation:captionPop .35s ease both}
 @keyframes captionPop{from{transform:scale(.9);opacity:.65}to{transform:scale(1);opacity:1}}
 @media(max-width:760px){.picker-boy-stage{height:145px!important}.cartoon-boy{width:166px!important;height:130px!important}.bin-dropzone{min-height:100px!important}}
+
+
+/* ===== Wider character-and-bin scene: crouch, collect, and toss paper ===== */
+.eco-workspace{grid-template-columns:360px minmax(0,1fr)!important}
+.eco-picker{padding:22px 19px 18px!important}
+.picker-boy-stage{height:220px!important;margin:16px 0 12px!important}
+.cartoon-boy{width:235px!important;height:184px!important;overflow:visible}
+.paper-stack{grid-template-columns:1fr 1fr!important;gap:11px!important}
+.paper-chit{min-height:66px!important;font-size:.82rem!important;padding:11px 10px!important}
+.paper-chit span{font-size:22px!important}
+.bin-dropzone{min-height:150px!important;margin-top:12px!important}
+.dustbin-icon{font-size:49px!important}
+.boy-body{transform-origin:80px 89px}
+.boy-legs{transform-origin:80px 95px}
+.boy-arm-left{transform-origin:60px 61px}
+.boy-arm-right{transform-origin:96px 61px}
+.boy-paper{transform-origin:36px 108px}
+.boy-bin{transform-origin:136px 106px}
+.boy-doing-action .boy-body{animation:ecoCollectCrouch 1.45s cubic-bezier(.3,.05,.3,1) forwards!important}
+.boy-doing-action .boy-legs{animation:ecoLegsCrouch 1.45s ease-in-out forwards}
+.boy-doing-action .boy-arm-left{animation:ecoArmCollect 1.45s ease-in-out forwards!important}
+.boy-doing-action .boy-arm-right{animation:ecoArmBin 1.45s ease-in-out forwards!important}
+.boy-doing-action .boy-paper{animation:ecoPaperCollectToss 1.45s ease-in-out forwards!important}
+.boy-doing-action .boy-bin{animation:ecoBinNudge 1.45s ease-in-out forwards}
+.boy-doing-action .bin-lid-art{animation:binOpenClose 1.45s ease-in-out forwards!important}
+@keyframes ecoCollectCrouch{
+  0%,100%{transform:rotate(0) translate(0,0)}
+  18%,38%{transform:rotate(28deg) translate(3px,5px)}
+  54%,72%{transform:rotate(16deg) translate(8px,4px)}
+  88%{transform:rotate(0) translate(0,0)}
+}
+@keyframes ecoLegsCrouch{
+  0%,100%{transform:translate(0,0)}
+  18%,42%{transform:translate(-2px,3px) rotate(-3deg)}
+  60%,75%{transform:translate(1px,1px)}
+}
+@keyframes ecoArmCollect{
+  0%,100%{transform:rotate(0)}
+  18%,38%{transform:rotate(-54deg) translate(-3px,9px)}
+  52%,68%{transform:rotate(-25deg) translate(9px,4px)}
+}
+@keyframes ecoArmBin{
+  0%,100%{transform:rotate(0)}
+  25%,44%{transform:rotate(20deg) translate(1px,4px)}
+  57%,74%{transform:rotate(48deg) translate(7px,7px)}
+}
+@keyframes ecoPaperCollectToss{
+  0%,12%{transform:translate(0,0) rotate(0) scale(1);opacity:1}
+  28%{transform:translate(2px,7px) rotate(-8deg) scale(1.05);opacity:1}
+  44%{transform:translate(20px,-1px) rotate(8deg) scale(1);opacity:1}
+  63%{transform:translate(85px,-28px) rotate(35deg) scale(.8);opacity:1}
+  78%,100%{transform:translate(104px,-5px) rotate(65deg) scale(.18);opacity:0}
+}
+@keyframes ecoBinNudge{
+  0%,100%{transform:translateX(0) rotate(0)}
+  50%,70%{transform:translateX(2px) rotate(2deg)}
+}
+@media(max-width:1050px){
+ .eco-workspace{grid-template-columns:320px minmax(0,1fr)!important}
+ .eco-picker{padding:18px 14px!important}
+ .cartoon-boy{width:210px!important;height:164px!important}
+}
+@media(max-width:760px){
+ .eco-workspace{grid-template-columns:1fr!important}
+ .eco-picker{padding:18px 15px!important}
+ .picker-boy-stage{height:190px!important}
+ .cartoon-boy{width:205px!important;height:160px!important}
+ .paper-stack{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ .paper-chit{min-height:56px!important;font-size:.72rem!important}
+ .bin-dropzone{min-height:105px!important}
+}
+@media(max-width:420px){.paper-stack{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
