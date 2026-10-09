@@ -549,3 +549,29 @@ body{margin:0!important;background:#edf7f2!important}
 @media(max-width:760px){.eco-workspace{grid-template-columns:1fr}.eco-picker{position:relative;top:auto;height:auto;max-height:none;border-right:0;border-bottom:1px solid rgba(255,255,255,.12)}.picker-boy-stage{height:90px}.picker-boy{font-size:42px}.paper-stack{grid-template-columns:repeat(3,minmax(0,1fr))}.paper-chit{min-height:50px;font-size:.69rem}.bin-dropzone{min-height:88px}.eco-main-top{height:38px}}
 @media(max-width:420px){.paper-stack{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.picker-boy,.picker-spark,.paper-chit.paper-picked{animation:none!important;transition:none!important}}
+
+
+/* Illustrated eco-boy: bend down, pick paper, drop it into the bin */
+.picker-boy{display:none!important}
+.cartoon-boy{width:154px;height:128px;overflow:visible;filter:drop-shadow(0 7px 8px rgba(0,0,0,.14));animation:boyIdle 3s ease-in-out infinite;transform-origin:80px 138px}
+.boy-body{transform-origin:80px 90px;transition:transform .35s ease}
+.boy-paper{transform-origin:36px 108px;animation:paperWait 3s ease-in-out infinite}
+.boy-bin{transform-origin:136px 105px}
+.bin-lid-art{transform-origin:136px 75px;transition:transform .25s ease}
+.boy-arm-left,.boy-arm-right{transition:transform .35s ease;transform-origin:60px 60px}
+@keyframes boyIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes paperWait{0%,65%,100%{transform:translate(0,0) rotate(0)}}
+.boy-doing-action .cartoon-boy{animation:none}
+.boy-doing-action .boy-body{animation:boyBend 1.15s cubic-bezier(.4,0,.2,1) forwards}
+.boy-doing-action .boy-arm-left{animation:boyReach 1.15s ease-in-out forwards}
+.boy-doing-action .boy-arm-right{animation:boyReachRight 1.15s ease-in-out forwards}
+.boy-doing-action .boy-paper{animation:paperIntoDustbin 1.15s ease-in-out forwards}
+.boy-doing-action .bin-lid-art{animation:binOpenClose 1.15s ease-in-out forwards}
+@keyframes boyBend{0%,100%{transform:rotate(0)}30%,65%{transform:rotate(27deg) translate(2px,4px)}}
+@keyframes boyReach{0%,100%{transform:rotate(0)}28%,58%{transform:rotate(-48deg) translate(-1px,6px)}}
+@keyframes boyReachRight{0%,100%{transform:rotate(0)}38%,62%{transform:rotate(36deg) translate(2px,8px)}}
+@keyframes paperIntoDustbin{0%,18%{transform:translate(0,0) rotate(0);opacity:1}38%{transform:translate(24px,12px) rotate(-10deg);opacity:1}68%{transform:translate(99px,-23px) rotate(20deg) scale(.8);opacity:1}86%,100%{transform:translate(104px,-3px) rotate(55deg) scale(.25);opacity:0}}
+@keyframes binOpenClose{0%,28%,78%,100%{transform:rotate(0)}42%,66%{transform:rotate(-28deg) translateY(-2px)}}
+.boy-doing-action .picker-boy-caption{color:#86ffc4;font-weight:800}
+@media(max-width:760px){.cartoon-boy{width:130px;height:108px}}
+@media(prefers-reduced-motion:reduce){.cartoon-boy,.boy-doing-action .boy-body,.boy-doing-action .boy-arm-left,.boy-doing-action .boy-arm-right,.boy-doing-action .boy-paper,.boy-doing-action .bin-lid-art{animation-duration:.01ms!important}}
