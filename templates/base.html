@@ -94,6 +94,7 @@
  if(!stack||!bin)return;
  let selectedUrl='';
  const boyStage=document.getElementById('boyStage');
+ if(boyStage) requestAnimationFrame(()=>boyStage.classList.add('boy-doing-action'));
  function animateDrop(url, chit){selectedUrl=url;if(chit)chit.classList.add('paper-picked');bin.classList.add('bin-ready');if(boyStage)boyStage.classList.add('boy-doing-action');setTimeout(()=>{window.location.href=url;},1250);}
  stack.querySelectorAll('.paper-chit').forEach(chit=>{
    chit.addEventListener('dragstart',e=>{selectedUrl=chit.dataset.url||chit.href;chit.classList.add('is-dragging');e.dataTransfer.setData('text/plain',selectedUrl);e.dataTransfer.effectAllowed='move';});
