@@ -677,3 +677,61 @@ body{margin:0!important;background:#edf7f2!important}
  .bin-dropzone{min-height:105px!important}
 }
 @media(max-width:420px){.paper-stack{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+
+
+/* ===== Wider eco-picker + full litter pick-up and bin-drop motion ===== */
+.eco-workspace{grid-template-columns:370px minmax(0,1fr)!important}
+.eco-picker{padding:20px 18px 18px!important}
+.picker-boy-stage{height:245px!important;margin:14px 0 12px!important}
+.cartoon-boy{width:286px!important;height:208px!important;max-width:100%;overflow:visible;transform-origin:125px 170px}
+.boy-body{transform-origin:124px 118px!important}
+.boy-paper{transform-origin:57px 136px!important}
+.boy-doing-action .boy-body{animation:boyBendToGround 1.25s cubic-bezier(.42,0,.2,1) forwards!important}
+.boy-doing-action .boy-arm-left{animation:reachDownAndLift 1.25s ease-in-out forwards!important}
+.boy-doing-action .boy-arm-right{animation:reachToBin 1.25s ease-in-out forwards!important}
+.boy-doing-action .boy-paper{animation:pickAndDropPaper 1.25s ease-in-out forwards!important}
+.boy-doing-action .ground-papers{animation:papersBeingPicked 1.25s ease-in-out forwards}
+.boy-doing-action .bin-lid-art{animation:wideBinLid 1.25s ease-in-out forwards!important}
+@keyframes boyBendToGround{
+  0%,100%{transform:rotate(0) translate(0,0)}
+  20%,40%{transform:rotate(23deg) translate(3px,7px)}
+  58%,76%{transform:rotate(14deg) translate(8px,3px)}
+}
+@keyframes reachDownAndLift{
+  0%,100%{transform:rotate(0) translate(0,0)}
+  22%,38%{transform:rotate(-22deg) translate(-4px,14px)}
+  60%,78%{transform:rotate(30deg) translate(20px,-3px)}
+}
+@keyframes reachToBin{
+  0%,100%{transform:rotate(0) translate(0,0)}
+  35%,55%{transform:rotate(22deg) translate(5px,12px)}
+  70%,83%{transform:rotate(52deg) translate(17px,-3px)}
+}
+@keyframes pickAndDropPaper{
+  0%,16%{transform:translate(0,0) rotate(0);opacity:1}
+  28%{transform:translate(0,14px) rotate(-12deg);opacity:1}
+  44%{transform:translate(13px,4px) rotate(10deg);opacity:1}
+  66%{transform:translate(125px,-30px) rotate(25deg) scale(.9);opacity:1}
+  84%,100%{transform:translate(154px,-1px) rotate(60deg) scale(.2);opacity:0}
+}
+@keyframes papersBeingPicked{
+  0%,100%{opacity:1}
+  22%,75%{opacity:.48}
+}
+@keyframes wideBinLid{
+  0%,25%,78%,100%{transform:rotate(0)}
+  42%,68%{transform:rotate(-34deg) translateY(-3px)}
+}
+@media(max-width:1050px){
+ .eco-workspace{grid-template-columns:330px minmax(0,1fr)!important}
+ .cartoon-boy{width:260px!important;height:190px!important}
+}
+@media(max-width:760px){
+ .eco-workspace{grid-template-columns:1fr!important}
+ .eco-picker{padding:16px 14px!important}
+ .picker-boy-stage{height:205px!important}
+ .cartoon-boy{width:250px!important;height:184px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .boy-doing-action .boy-body,.boy-doing-action .boy-arm-left,.boy-doing-action .boy-arm-right,.boy-doing-action .boy-paper,.boy-doing-action .ground-papers,.boy-doing-action .bin-lid-art{animation-duration:.01ms!important}
+}
