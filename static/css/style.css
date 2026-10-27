@@ -783,3 +783,19 @@ body{margin:0!important;background:#edf7f2!important}
  .bin-dropzone{min-height:110px!important}
 }
 @media(max-width:420px){.paper-stack{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+
+
+/* ===== User-requested larger sidebar and continuous paper-picking action ===== */
+@media(min-width:1151px){.eco-workspace{grid-template-columns:460px minmax(0,1fr)!important}.eco-picker{padding:24px 24px 22px!important}.picker-boy-stage{height:300px!important;margin:18px 0 16px!important}.cartoon-boy{width:350px!important;height:255px!important;max-width:100%!important}.paper-stack{grid-template-columns:1fr 1fr!important;gap:13px!important}.paper-chit{min-height:72px!important;font-size:.86rem!important}.bin-dropzone{min-height:170px!important}}
+@media(min-width:761px) and (max-width:1150px){.eco-workspace{grid-template-columns:390px minmax(0,1fr)!important}.eco-picker{padding:20px 17px!important}.picker-boy-stage{height:270px!important}.cartoon-boy{width:315px!important;height:230px!important}}
+/* Keep the character collecting litter repeatedly, not only after a menu click. */
+.picker-boy-stage.boy-doing-action .boy-body{animation:boyBendToGround 2.8s cubic-bezier(.42,0,.2,1) infinite!important}
+.picker-boy-stage.boy-doing-action .boy-arm-left{animation:reachDownAndLift 2.8s ease-in-out infinite!important}
+.picker-boy-stage.boy-doing-action .boy-arm-right{animation:reachToBin 2.8s ease-in-out infinite!important}
+.picker-boy-stage.boy-doing-action .boy-paper{animation:pickAndDropPaper 2.8s ease-in-out infinite!important}
+.picker-boy-stage.boy-doing-action .ground-papers path:nth-child(1){animation:groundScrapOne 2.8s .02s ease-in-out infinite!important}
+.picker-boy-stage.boy-doing-action .ground-papers path:nth-child(2){animation:groundScrapTwo 2.8s .12s ease-in-out infinite!important}
+.picker-boy-stage.boy-doing-action .ground-papers path:nth-child(3){animation:groundScrapThree 2.8s .22s ease-in-out infinite!important}
+.picker-boy-stage.boy-doing-action .bin-lid-art{animation:wideBinLid 2.8s ease-in-out infinite!important}
+@media(max-width:760px){.picker-boy-stage{height:230px!important}.cartoon-boy{width:280px!important;height:205px!important}}
+@media(prefers-reduced-motion:reduce){.picker-boy-stage.boy-doing-action .boy-body,.picker-boy-stage.boy-doing-action .boy-arm-left,.picker-boy-stage.boy-doing-action .boy-arm-right,.picker-boy-stage.boy-doing-action .boy-paper,.picker-boy-stage.boy-doing-action .ground-papers path,.picker-boy-stage.boy-doing-action .bin-lid-art{animation-duration:.01ms!important;animation-iteration-count:1!important}}
