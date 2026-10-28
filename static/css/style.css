@@ -878,3 +878,22 @@ body{margin:0!important;background:#edf7f2!important}
   .picker-boy-stage{height:230px!important}
   .cartoon-boy{width:280px!important;height:205px!important}
 }
+
+
+/* Replace floating paper-chit panel with a normal responsive top navigation bar */
+.eco-workspace{display:flex!important;flex-direction:column!important;min-height:100vh}
+.eco-picker{position:relative!important;top:auto!important;width:100%;height:auto!important;max-height:none!important;overflow:visible!important;display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px clamp(14px,3vw,34px)!important;border-right:0!important;border-bottom:1px solid rgba(255,255,255,.14);box-shadow:0 5px 18px rgba(4,48,36,.12)}
+.picker-brand{flex:0 0 100%;padding:0 0 10px!important}
+.paper-stack{display:flex!important;flex-wrap:wrap;align-items:center;gap:7px!important;padding:0!important;width:100%}
+.paper-chit{min-height:38px!important;display:inline-flex!important;width:auto!important;flex:0 0 auto;padding:8px 12px!important;font-size:.82rem!important;border-radius:999px!important;transform:none!important;box-shadow:none!important;cursor:pointer!important}
+.paper-chit:after{display:none!important}
+.paper-chit:hover,.paper-chit:focus-visible{transform:translateY(-1px)!important;box-shadow:0 4px 12px rgba(0,0,0,.16)!important}
+.picker-footer{display:none!important}
+.eco-main{width:100%;min-height:0}
+@media(max-width:760px){
+ .eco-picker{gap:8px;padding:10px 12px!important}
+ .picker-brand{flex-basis:100%}
+ .paper-stack{display:flex!important;flex-wrap:wrap!important;grid-template-columns:none!important;gap:6px!important}
+ .paper-chit{min-height:34px!important;font-size:.75rem!important;padding:7px 10px!important}
+ .eco-main-top{height:38px}
+}
