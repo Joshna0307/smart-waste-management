@@ -49,23 +49,37 @@
  function animateDrop(url, chit){
    selectedUrl=url;
    bin.classList.add('bin-ready');
-   let delay=650;
    if(chit){
      const from=chit.getBoundingClientRect(), to=bin.getBoundingClientRect();
      const flyer=chit.cloneNode(true);
      flyer.removeAttribute('href');
-     flyer.style.cssText='position:fixed!important;z-index:99999!important;left:'+from.left+'px!important;top:'+from.top+'px!important;width:'+from.width+'px!important;height:'+from.height+'px!important;margin:0!important;pointer-events:none!important;transition:all .62s cubic-bezier(.2,.75,.25,1)!important;transform:none!important;opacity:1!important;';
+     flyer.removeAttribute('draggable');
+     flyer.style.position='fixed';
+     flyer.style.zIndex='99999';
+     flyer.style.left=from.left+'px';
+     flyer.style.top=from.top+'px';
+     flyer.style.width=from.width+'px';
+     flyer.style.height=from.height+'px';
+     flyer.style.margin='0';
+     flyer.style.pointerEvents='none';
+     flyer.style.transition='left .65s cubic-bezier(.2,.75,.25,1),top .65s cubic-bezier(.2,.75,.25,1),width .65s ease,height .65s ease,opacity .65s ease,transform .65s ease';
+     flyer.style.transform='rotate(0deg) scale(1)';
+     flyer.style.opacity='1';
+     flyer.style.boxSizing='border-box';
      document.body.appendChild(flyer);
      chit.style.visibility='hidden';
      requestAnimationFrame(()=>requestAnimationFrame(()=>{
-       flyer.style.left=(to.left+to.width/2-flyer.offsetWidth/2)+'px';
-       flyer.style.top=(to.top+to.height/2-flyer.offsetHeight/2)+'px';
-       flyer.style.width='12px';flyer.style.height='12px';flyer.style.opacity='0';
+       flyer.style.left=(to.left+to.width/2-6)+'px';
+       flyer.style.top=(to.top+to.height/2-6)+'px';
+       flyer.style.width='12px';
+       flyer.style.height='12px';
+       flyer.style.opacity='0';
        flyer.style.transform='rotate(360deg) scale(.15)';
      }));
-     setTimeout(()=>flyer.remove(),680);
+     setTimeout(()=>{flyer.remove();window.location.href=url;},680);
+   } else {
+     setTimeout(()=>{window.location.href=url;},680);
    }
-   setTimeout(()=>{window.location.href=url;},delay);
  }
  stack.querySelectorAll('.paper-chit').forEach(chit=>{
    chit.addEventListener('dragstart',e=>{selectedUrl=chit.dataset.url||chit.href;chit.classList.add('is-dragging');e.dataTransfer.setData('text/plain',selectedUrl);e.dataTransfer.effectAllowed='move';});
