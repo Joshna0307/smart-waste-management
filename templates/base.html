@@ -10,7 +10,7 @@
 <body class="page-{{ request.endpoint|default('home')|replace('_','-') }}">
 <div class="eco-workspace">
   <aside class="eco-picker" aria-label="Paper chit page navigation">
-    <div class="picker-brand"><span class="picker-logo">♻</span><div><strong>EcoMind</strong><small>Pick a page · Drop it in</small></div></div>
+    <div class="picker-brand"><span class="picker-logo">♻</span><div><strong>EcoMind</strong><small>Navigate your space</small></div></div>
     <div class="paper-stack" id="paperStack">
       <a class="paper-chit paper-mint" data-url="{{url_for('index')}}" href="{{url_for('index')}}"><span>🏡</span> Home</a>
       {% if current_user and not session.get('is_admin') %}<a class="paper-chit paper-blue" data-url="{{url_for('dashboard')}}" href="{{url_for('dashboard')}}"><span>📊</span> Dashboard</a><a class="paper-chit paper-purple" data-url="{{url_for('eco_hub')}}" href="{{url_for('eco_hub')}}"><span>🤖</span> EcoMind AI</a>{% endif %}
