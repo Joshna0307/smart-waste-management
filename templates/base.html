@@ -10,7 +10,7 @@
 <body class="page-{{ request.endpoint|default('home')|replace('_','-') }}">
 <div class="eco-workspace">
   <aside class="eco-picker" aria-label="Paper chit page navigation">
-    <div class="picker-brand"><span class="picker-logo">♻</span><div><strong>EcoMind</strong><small>Navigate your space</small></div></div>
+    <div class="picker-brand"><span class="picker-logo">♻</span><div class="picker-brand-text"><strong>EcoMind</strong><small>Navigate your space</small></div><button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="paperStack"><i class="fa-solid fa-bars" aria-hidden="true"></i><span>Menu</span></button></div>
     <div class="paper-stack" id="paperStack">
       <a class="paper-chit paper-mint" data-url="{{url_for('index')}}" href="{{url_for('index')}}"><span>🏡</span> Home</a>
       {% if current_user and not session.get('is_admin') %}<a class="paper-chit paper-blue" data-url="{{url_for('dashboard')}}" href="{{url_for('dashboard')}}"><span>📊</span> Dashboard</a><a class="paper-chit paper-purple" data-url="{{url_for('eco_hub')}}" href="{{url_for('eco_hub')}}"><span>🤖</span> EcoMind AI</a>{% endif %}
@@ -38,6 +38,7 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{url_for('static',filename='js/main.js')}}"></script>
+<script>document.addEventListener("DOMContentLoaded",function(){const b=document.getElementById("menuToggle"),n=document.getElementById("paperStack");if(b&&n){n.classList.add("menu-collapsed");b.addEventListener("click",function(){const open=n.classList.toggle("menu-open");n.classList.toggle("menu-collapsed",!open);b.setAttribute("aria-expanded",String(open));b.innerHTML=open?'<i class="fa-solid fa-xmark" aria-hidden="true"></i><span>Close</span>':'<i class="fa-solid fa-bars" aria-hidden="true"></i><span>Menu</span>';});}});</script>
 
 {% block scripts %}{% endblock %}
 </body></html>
