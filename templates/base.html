@@ -12,22 +12,19 @@
   <aside class="eco-picker" aria-label="Paper chit page navigation">
     <div class="picker-brand"><span class="picker-logo">♻</span><div><strong>EcoMind</strong><small>Pick a page · Drop it in</small></div></div>
     <div class="paper-stack" id="paperStack">
-      <a class="paper-chit paper-mint" draggable="true" data-url="{{url_for('index')}}" href="{{url_for('index')}}"><span>🏡</span> Home</a>
-      {% if current_user and not session.get('is_admin') %}<a class="paper-chit paper-blue" draggable="true" data-url="{{url_for('dashboard')}}" href="{{url_for('dashboard')}}"><span>📊</span> Dashboard</a><a class="paper-chit paper-purple" draggable="true" data-url="{{url_for('eco_hub')}}" href="{{url_for('eco_hub')}}"><span>🤖</span> EcoMind AI</a>{% endif %}
-      <a class="paper-chit paper-lime" draggable="true" data-url="{{url_for('waste_types')}}" href="{{url_for('waste_types')}}"><span>♻️</span> Waste Types</a>
-      <a class="paper-chit paper-orange" draggable="true" data-url="{{url_for('pollution')}}" href="{{url_for('pollution')}}"><span>🌍</span> Pollution</a>
-      <a class="paper-chit paper-blue" draggable="true" data-url="{{url_for('ai_identifier')}}" href="{{url_for('ai_identifier')}}"><span>🧠</span> AI Identifier</a>
-      <a class="paper-chit paper-cyan" draggable="true" data-url="{{url_for('disposal_map')}}" href="{{url_for('disposal_map')}}"><span>🗺️</span> Map</a>
-      <a class="paper-chit paper-teal" draggable="true" data-url="{{url_for('smart_bins')}}" href="{{url_for('smart_bins')}}"><span>🗑️</span> Smart Bins</a>
-      <a class="paper-chit paper-pink" draggable="true" data-url="{{url_for('collect_report')}}" href="{{url_for('collect_report')}}"><span>📮</span> Collect & Report</a>
-      <a class="paper-chit paper-lime" draggable="true" data-url="{{url_for('recycle')}}" href="{{url_for('recycle')}}"><span>🌱</span> Reuse / Recycle</a>
-      {% if current_user %}<a class="paper-chit paper-purple" draggable="true" data-url="{{url_for('marketplace')}}" href="{{url_for('marketplace')}}"><span>🛍️</span> Marketplace</a><a class="paper-chit paper-blue" draggable="true" data-url="{{url_for('notifications')}}" href="{{url_for('notifications')}}"><span>🔔</span> Notifications</a><a class="paper-chit paper-teal" draggable="true" data-url="{{url_for('profile')}}" href="{{url_for('profile')}}"><span>👤</span> Profile</a>{% endif %}
-      <a class="paper-chit paper-orange" draggable="true" data-url="{{url_for('contact')}}" href="{{url_for('contact')}}"><span>✉️</span> Contact</a>
-      {% if session.get('is_admin') %}<a class="paper-chit paper-pink" draggable="true" data-url="{{url_for('admin')}}" href="{{url_for('admin')}}"><span>🛡️</span> Admin Dashboard</a><a class="paper-chit paper-mint" draggable="true" data-url="{{url_for('admin')}}#completed" href="{{url_for('admin')}}#completed"><span>✅</span> Completed</a>{% endif %}
-      {% if current_user or session.get('is_admin') %}<a class="paper-chit paper-gray" draggable="true" data-url="{{url_for('logout')}}" href="{{url_for('logout')}}"><span>🚪</span> Logout</a>{% else %}<a class="paper-chit paper-blue" draggable="true" data-url="{{url_for('login')}}" href="{{url_for('login')}}"><span>🔑</span> User Login</a><a class="paper-chit paper-pink" draggable="true" data-url="{{url_for('admin_login')}}" href="{{url_for('admin_login')}}"><span>🛡️</span> Admin Login</a>{% endif %}
-    </div>
-    <div class="bin-dropzone" id="binDropzone" tabindex="0" role="button" aria-label="Drop a page paper into the dustbin to open it">
-      <div class="bin-glow"></div><div class="dustbin-lid"></div><div class="dustbin-icon">🗑️</div><strong>DROP TO OPEN</strong><small>Drop a paper chit here</small>
+      <a class="paper-chit paper-mint" data-url="{{url_for('index')}}" href="{{url_for('index')}}"><span>🏡</span> Home</a>
+      {% if current_user and not session.get('is_admin') %}<a class="paper-chit paper-blue" data-url="{{url_for('dashboard')}}" href="{{url_for('dashboard')}}"><span>📊</span> Dashboard</a><a class="paper-chit paper-purple" data-url="{{url_for('eco_hub')}}" href="{{url_for('eco_hub')}}"><span>🤖</span> EcoMind AI</a>{% endif %}
+      <a class="paper-chit paper-lime" data-url="{{url_for('waste_types')}}" href="{{url_for('waste_types')}}"><span>♻️</span> Waste Types</a>
+      <a class="paper-chit paper-orange" data-url="{{url_for('pollution')}}" href="{{url_for('pollution')}}"><span>🌍</span> Pollution</a>
+      <a class="paper-chit paper-blue" data-url="{{url_for('ai_identifier')}}" href="{{url_for('ai_identifier')}}"><span>🧠</span> AI Identifier</a>
+      <a class="paper-chit paper-cyan" data-url="{{url_for('disposal_map')}}" href="{{url_for('disposal_map')}}"><span>🗺️</span> Map</a>
+      <a class="paper-chit paper-teal" data-url="{{url_for('smart_bins')}}" href="{{url_for('smart_bins')}}"><span>🗑️</span> Smart Bins</a>
+      <a class="paper-chit paper-pink" data-url="{{url_for('collect_report')}}" href="{{url_for('collect_report')}}"><span>📮</span> Collect & Report</a>
+      <a class="paper-chit paper-lime" data-url="{{url_for('recycle')}}" href="{{url_for('recycle')}}"><span>🌱</span> Reuse / Recycle</a>
+      {% if current_user %}<a class="paper-chit paper-purple" data-url="{{url_for('marketplace')}}" href="{{url_for('marketplace')}}"><span>🛍️</span> Marketplace</a><a class="paper-chit paper-blue" data-url="{{url_for('notifications')}}" href="{{url_for('notifications')}}"><span>🔔</span> Notifications</a><a class="paper-chit paper-teal" data-url="{{url_for('profile')}}" href="{{url_for('profile')}}"><span>👤</span> Profile</a>{% endif %}
+      <a class="paper-chit paper-orange" data-url="{{url_for('contact')}}" href="{{url_for('contact')}}"><span>✉️</span> Contact</a>
+      {% if session.get('is_admin') %}<a class="paper-chit paper-pink" data-url="{{url_for('admin')}}" href="{{url_for('admin')}}"><span>🛡️</span> Admin Dashboard</a><a class="paper-chit paper-mint" data-url="{{url_for('admin')}}#completed" href="{{url_for('admin')}}#completed"><span>✅</span> Completed</a>{% endif %}
+      {% if current_user or session.get('is_admin') %}<a class="paper-chit paper-gray" data-url="{{url_for('logout')}}" href="{{url_for('logout')}}"><span>🚪</span> Logout</a>{% else %}<a class="paper-chit paper-blue" data-url="{{url_for('login')}}" href="{{url_for('login')}}"><span>🔑</span> User Login</a><a class="paper-chit paper-pink" data-url="{{url_for('admin_login')}}" href="{{url_for('admin_login')}}"><span>🛡️</span> Admin Login</a>{% endif %}
     </div>
     <div class="picker-footer">♻ Reduce · Reuse · Recycle</div>
   </aside>
@@ -41,56 +38,6 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{url_for('static',filename='js/main.js')}}"></script>
-<script>
-(()=> {
- const stack=document.getElementById('paperStack'), bin=document.getElementById('binDropzone');
- if(!stack||!bin)return;
- let selectedUrl='';
- function animateDrop(url, chit){
-   selectedUrl=url;
-   bin.classList.add('bin-ready');
-   if(chit){
-     const from=chit.getBoundingClientRect(), to=bin.getBoundingClientRect();
-     const flyer=chit.cloneNode(true);
-     flyer.removeAttribute('href');
-     flyer.removeAttribute('draggable');
-     flyer.style.position='fixed';
-     flyer.style.zIndex='99999';
-     flyer.style.left=from.left+'px';
-     flyer.style.top=from.top+'px';
-     flyer.style.width=from.width+'px';
-     flyer.style.height=from.height+'px';
-     flyer.style.margin='0';
-     flyer.style.pointerEvents='none';
-     flyer.style.transition='left .65s cubic-bezier(.2,.75,.25,1),top .65s cubic-bezier(.2,.75,.25,1),width .65s ease,height .65s ease,opacity .65s ease,transform .65s ease';
-     flyer.style.transform='rotate(0deg) scale(1)';
-     flyer.style.opacity='1';
-     flyer.style.boxSizing='border-box';
-     document.body.appendChild(flyer);
-     chit.style.visibility='hidden';
-     requestAnimationFrame(()=>requestAnimationFrame(()=>{
-       flyer.style.left=(to.left+to.width/2-6)+'px';
-       flyer.style.top=(to.top+to.height/2-6)+'px';
-       flyer.style.width='12px';
-       flyer.style.height='12px';
-       flyer.style.opacity='0';
-       flyer.style.transform='rotate(360deg) scale(.15)';
-     }));
-     setTimeout(()=>{flyer.remove();window.location.href=url;},680);
-   } else {
-     setTimeout(()=>{window.location.href=url;},680);
-   }
- }
- stack.querySelectorAll('.paper-chit').forEach(chit=>{
-   chit.addEventListener('dragstart',e=>{selectedUrl=chit.dataset.url||chit.href;chit.classList.add('is-dragging');e.dataTransfer.setData('text/plain',selectedUrl);e.dataTransfer.effectAllowed='move';});
-   chit.addEventListener('dragend',()=>chit.classList.remove('is-dragging'));
-   chit.addEventListener('click',e=>{if(e.ctrlKey||e.metaKey)return;e.preventDefault();selectedUrl=chit.dataset.url||chit.href;animateDrop(selectedUrl,chit);});
- });
- bin.addEventListener('dragover',e=>{e.preventDefault();bin.classList.add('bin-hover');e.dataTransfer.dropEffect='move';});
- bin.addEventListener('dragleave',()=>bin.classList.remove('bin-hover'));
- bin.addEventListener('drop',e=>{e.preventDefault();bin.classList.remove('bin-hover');const url=e.dataTransfer.getData('text/plain')||selectedUrl;if(url){animateDrop(url,stack.querySelector('.is-dragging'));}});
- bin.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&selectedUrl){e.preventDefault();animateDrop(selectedUrl,null);}});
-})();
-</script>
+
 {% block scripts %}{% endblock %}
 </body></html>
