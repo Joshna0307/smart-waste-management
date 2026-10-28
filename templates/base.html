@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}">{% block head %}{% endblock %}
 </head>
 <body class="page-{{ request.endpoint|default('home')|replace('_','-') }}">
+<button class="floating-menu-toggle" id="floatingMenuToggle" type="button" aria-expanded="false" aria-controls="paperStack" aria-label="Open navigation menu"><i class="fa-solid fa-bars" aria-hidden="true"></i><span>Menu</span></button>
 <div class="eco-workspace">
   <aside class="eco-picker" aria-label="Paper chit page navigation">
     <div class="picker-brand"><span class="picker-logo">♻</span><div class="picker-brand-text"><strong>EcoMind</strong><small>Navigate your space</small></div><button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="paperStack"><i class="fa-solid fa-bars" aria-hidden="true"></i><span>Menu</span></button></div>
@@ -40,5 +41,20 @@
 <script src="{{url_for('static',filename='js/main.js')}}"></script>
 <script>document.addEventListener("DOMContentLoaded",function(){const b=document.getElementById("menuToggle"),n=document.getElementById("paperStack");if(b&&n){n.classList.add("menu-collapsed");b.addEventListener("click",function(){const open=n.classList.toggle("menu-open");n.classList.toggle("menu-collapsed",!open);b.setAttribute("aria-expanded",String(open));b.innerHTML=open?'<i class="fa-solid fa-xmark" aria-hidden="true"></i><span>Close</span>':'<i class="fa-solid fa-bars" aria-hidden="true"></i><span>Menu</span>';});}});</script>
 
+
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+ const b=document.getElementById("floatingMenuToggle"), n=document.getElementById("paperStack");
+ if(!b||!n)return;
+ b.addEventListener("click",function(){
+   const open=n.classList.toggle("menu-open");
+   n.classList.toggle("menu-collapsed",!open);
+   b.setAttribute("aria-expanded",String(open));
+   b.setAttribute("aria-label",open?"Close navigation menu":"Open navigation menu");
+   b.innerHTML=open?'<i class="fa-solid fa-xmark" aria-hidden="true"></i><span>Close</span>':'<i class="fa-solid fa-bars" aria-hidden="true"></i><span>Menu</span>';
+   if(open)n.scrollIntoView({behavior:"smooth",block:"nearest"});
+ });
+});
+</script>
 {% block scripts %}{% endblock %}
 </body></html>
