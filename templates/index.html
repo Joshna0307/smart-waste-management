@@ -1,1 +1,52 @@
-{% extends 'base.html' %}{% block content %}<section class="hero"><div class="container py-5"><p class="eyebrow">AI • RECYCLING • COMMUNITY</p><h1>Smart Waste Management for a <span>Cleaner Tomorrow</span></h1><p class="lead">Identify. Classify. Recycle. Collect. Dispose Responsibly.</p><div class="d-flex gap-2 flex-wrap"><a class="btn btn-success btn-lg" href="{{url_for('login')}}"><i class="fa-solid fa-user me-2"></i>User Login</a><a class="btn btn-warning btn-lg" href="{{url_for('admin_login')}}"><i class="fa-solid fa-shield-halved me-2"></i>Admin Login</a><a class="btn btn-outline-light btn-lg" href="{{url_for('disposal_map')}}">Find Disposal Center</a><a class="btn btn-outline-light btn-lg" href="{{url_for('collect_report')}}">Collect & Report</a></div></div></section><div class="container py-5"><h2>Everything in one place</h2><div class="row g-4 mt-2">{% for icon,title,text in [('camera','AI Waste Identification','Upload or capture waste and get a local demo classification.'),('recycle','Reuse & Recycling','Get practical reuse and recycling actions.'),('truck','Waste Collection','Create pickup requests and track status.'),('triangle-exclamation','Community Reporting','Report overflowing bins, illegal dumping and missed collection.'),('location-dot','Disposal Locator','Explore recycling, e-waste and compost centers.'),('chart-line','Impact Dashboard','Track activity and environmental points.'),('leaf','Pollution Awareness','Learn about waste-related pollution.') ] %}<div class="col-md-6 col-lg-4"><div class="cardx"><i class="fa-solid fa-{{icon}}"></i><h4>{{title}}</h4><p>{{text}}</p></div></div>{% endfor %}</div><div class="section-panel mt-5"><h2>How it works</h2><div class="row g-3 mt-2">{% for n,t in [(1,'Upload or capture waste'),(2,'AI identifies the waste'),(3,'Classify the material'),(4,'Get reuse/recycling guidance'),(5,'Find the right disposal center')] %}<div class="col-md"><div class="step"><b>{{n}}</b>{{t}}</div></div>{% endfor %}</div></div></div>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}EcoMind AI | Smart Waste Management{% endblock %}
+{% block head %}
+<meta name="description" content="A smarter way to identify, segregate, collect and recycle waste with EcoMind AI Smart Waste Management.">
+{% endblock %}
+{% block content %}
+<section class="em-hero">
+  <div class="em-hero-photo" role="img" aria-label="Sustainable waste sorting and recycling"></div>
+  <div class="em-hero-shade"></div>
+  <div class="container em-hero-inner">
+    <div class="em-hero-copy">
+      <span class="em-kicker"><i class="fa-solid fa-leaf"></i> SMARTER CITIES · CLEANER COMMUNITIES</span>
+      <h1>Waste less.<br><span>Live greener.</span></h1>
+      <p class="em-hero-lead">A connected platform to identify waste, improve segregation, request collection and make responsible recycling easier.</p>
+      <div class="em-hero-actions">
+        <a class="em-btn em-btn-primary" href="{{url_for('login')}}">Get started <i class="fa-solid fa-arrow-right"></i></a>
+        <a class="em-btn em-btn-glass" href="{{url_for('ai_identifier')}}"><i class="fa-solid fa-camera"></i> Try waste identifier</a>
+      </div>
+      <div class="em-trust-line"><span><i class="fa-solid fa-circle-check"></i> Easy to use</span><span><i class="fa-solid fa-recycle"></i> Circular thinking</span><span><i class="fa-solid fa-people-group"></i> Community first</span></div>
+    </div>
+    <div class="em-hero-visual">
+      <div class="em-image-main"><img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1100&q=85" alt="Recycling and waste sorting" loading="eager"></div>
+      <div class="em-image-float"><span class="em-float-icon"><i class="fa-solid fa-seedling"></i></span><div><strong>Small actions.</strong><small>Cleaner surroundings.</small></div></div>
+      <div class="em-orbit em-orbit-one"></div><div class="em-orbit em-orbit-two"></div>
+    </div>
+  </div>
+  <div class="em-hero-bottom"><span>01 / A BETTER WAY TO MANAGE WASTE</span><span>SCROLL TO EXPLORE <i class="fa-solid fa-arrow-down"></i></span></div>
+</section>
+
+<section class="em-intro container">
+  <div class="em-section-label">THE EC0MIND PLATFORM</div>
+  <div class="em-intro-grid"><h2>From everyday waste<br>to <span>valuable resources.</span></h2><p>EcoMind brings essential waste-management tools into one simple digital space. Understand what you throw away, choose the right next step and keep your community informed.</p></div>
+</section>
+
+<section class="em-solutions container">
+  <div class="em-section-heading"><div><div class="em-section-label">WHAT YOU CAN DO</div><h2>One platform. <span>Practical solutions.</span></h2></div><a href="{{url_for('login')}}" class="em-text-link">Explore your workspace <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+  <div class="em-solution-grid">
+    <a class="em-solution-card em-card-wide" href="{{url_for('ai_identifier')}}"><img src="https://images.unsplash.com/photo-1605600659873-d808a13e4d9a?auto=format&fit=crop&w=1000&q=80" alt="Materials prepared for recycling" loading="lazy"><span class="em-card-overlay"></span><div class="em-card-content"><span class="em-card-number">01 / IDENTIFY</span><h3>Know your waste</h3><p>Use the waste identifier to explore material categories and disposal guidance.</p><span class="em-card-arrow"><i class="fa-solid fa-arrow-right"></i></span></div></a>
+    <a class="em-solution-card" href="{{url_for('recycle')}}"><img src="https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=900&q=80" alt="Recycling materials" loading="lazy"><span class="em-card-overlay"></span><div class="em-card-content"><span class="em-card-number">02 / RECOVER</span><h3>Reuse & recycle</h3><p>Find better ways to give materials another life.</p><span class="em-card-arrow"><i class="fa-solid fa-arrow-right"></i></span></div></a>
+    <a class="em-solution-card" href="{{url_for('collect_report')}}"><img src="https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=900&q=80" alt="Waste collection containers" loading="lazy"><span class="em-card-overlay"></span><div class="em-card-content"><span class="em-card-number">03 / TAKE ACTION</span><h3>Collect & report</h3><p>Request a pickup or report a local waste concern.</p><span class="em-card-arrow"><i class="fa-solid fa-arrow-right"></i></span></div></a>
+    <a class="em-solution-card" href="{{url_for('disposal_map')}}"><img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80" alt="Modern planning workspace" loading="lazy"><span class="em-card-overlay"></span><div class="em-card-content"><span class="em-card-number">04 / FIND</span><h3>Locate disposal points</h3><p>Explore the map and find available disposal locations.</p><span class="em-card-arrow"><i class="fa-solid fa-arrow-right"></i></span></div></a>
+  </div>
+</section>
+
+<section class="em-control-band">
+ <div class="container em-control-grid"><div><div class="em-section-label">DIGITAL WASTE OPERATIONS</div><h2>Better visibility.<br><span>Better decisions.</span></h2><p>Bring reports, collection activity and waste insights together in a clear workspace designed for users and administrators.</p><a class="em-btn em-btn-light" href="{{url_for('admin_login')}}">Admin workspace <i class="fa-solid fa-arrow-right"></i></a></div><div class="em-dashboard-art"><div class="em-dash-top"><span><i class="fa-solid fa-circle"></i> EcoMind overview</span><span>LIVE WORKSPACE</span></div><div class="em-dash-body"><div class="em-dash-side"><i class="fa-solid fa-chart-pie"></i><i class="fa-solid fa-map-location-dot"></i><i class="fa-solid fa-truck-fast"></i><i class="fa-solid fa-bell"></i></div><div class="em-dash-content"><div class="em-dash-title">Waste operations</div><div class="em-dash-metrics"><div><small>Collection</small><b><i class="fa-solid fa-truck"></i></b><span>Requests</span></div><div><small>Community</small><b><i class="fa-solid fa-people-group"></i></b><span>Reports</span></div><div><small>Insights</small><b><i class="fa-solid fa-chart-line"></i></b><span>Activity</span></div></div><div class="em-dash-map"><div class="em-map-lines"></div><span class="em-map-pin pin-a"><i class="fa-solid fa-location-dot"></i></span><span class="em-map-pin pin-b"><i class="fa-solid fa-location-dot"></i></span><span class="em-map-pin pin-c"><i class="fa-solid fa-location-dot"></i></span><div class="em-map-caption">Connected waste locations</div></div></div></div></div></div>
+</section>
+
+<section class="em-steps container"><div class="em-section-label">SIMPLE WORKFLOW</div><h2>Make the next step <span>count.</span></h2><div class="em-step-grid"><div><b>01</b><i class="fa-solid fa-camera"></i><h3>Identify</h3><p>Understand the type of waste you have.</p></div><div><b>02</b><i class="fa-solid fa-layer-group"></i><h3>Segregate</h3><p>Choose the right material category.</p></div><div><b>03</b><i class="fa-solid fa-recycle"></i><h3>Take action</h3><p>Reuse, recycle or request collection.</p></div><div><b>04</b><i class="fa-solid fa-chart-simple"></i><h3>Track</h3><p>Follow requests and community updates.</p></div></div></section>
+
+<section class="em-cta"><div class="container em-cta-inner"><div><div class="em-section-label">START WITH ONE ACTION</div><h2>A cleaner tomorrow<br>starts <span>right here.</span></h2></div><div class="em-cta-actions"><a class="em-btn em-btn-primary" href="{{url_for('login')}}">Enter EcoMind <i class="fa-solid fa-arrow-right"></i></a><a class="em-cta-secondary" href="{{url_for('contact')}}">Talk to us</a></div></div></section>
+{% endblock %}
